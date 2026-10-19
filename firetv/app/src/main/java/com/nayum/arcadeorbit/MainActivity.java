@@ -3,6 +3,7 @@ package com.nayum.arcadeorbit;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -21,9 +22,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        // Use immersive mode on TV devices; keep normal system bars on phones.
+        boolean hasTouchscreen = getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN);
+        if (!hasTouchscreen) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
 
         FrameLayout root = new FrameLayout(this);
         root.setBackgroundColor(Color.rgb(16, 19, 29));
