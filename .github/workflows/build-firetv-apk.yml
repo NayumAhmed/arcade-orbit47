@@ -1,0 +1,48 @@
+name: Build Fire TV APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "firetv/**"
+      - ".github/workflows/build-firetv-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Build debug APK
+        working-directory: firetv
+        run: gradle assembleDebug --no-daemon
+
+      - name: Prepare release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view firetv-latest --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create firetv-latest --repo "${GITHUB_REPOSITORY}"               --title "Arcade Orbit for Fire TV"               --notes "Install the Arcade Orbit WebView app on Amazon Fire TV / Firestick. This build loads the live Arcade Orbit website."
+          fi
+
+      - name: Publish APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload firetv-latest firetv/app/build/outputs/apk/debug/app-debug.apk#ArcadeOrbit.apk             --repo "${GITHUB_REPOSITORY}" --clobber
