@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.nayum.arcadeorbit'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.nayum.arcadeorbit'
+        minSdk 21
+        targetSdk 28
+        versionCode 1
+        versionName '1.0'
+    }
+}
