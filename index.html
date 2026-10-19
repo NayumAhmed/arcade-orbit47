@@ -213,7 +213,7 @@ const games=[
 ,{id:'vibecode-games',title:'vibecode.game',cat:'Resources',icon:'🧪',desc:'Directory of vibe-coded games filterable by AI tool and engine.',url:'https://vibecode.game/vibe-coded-games'}
 ,{id:'whimcade',title:'Whimcade',cat:'Resources',icon:'🎨',desc:'Browser arcade of games created from short prompts.',url:'https://whimcade.com/'}
 ];
-const colors={Arcade:'#292746',Board:'#273d42',Puzzle:'#38324e',Casual:'#453044',Action:'#4a293a',FPS:'#263849',Sports:'#24483e',RPG:'#46304a',Strategy:'#3b3c28',Platformer:'#3c4930',Resources:'#263849'};
+const colors={Arcade:'#292746',Board:'#273d42',Puzzle:'#38324e',Casual:'#453044',Action:'#4a293a',FPS:'#263849',Sports:'#24483e',RPG:'#46304a',Strategy:'#3b3c28',Platformer:'#3c4930',Resources:'#263849',Racing:'#3d2f25',Simulation:'#253c42',Adventure:'#40304c'};
 let category='All games',query='',favorites=load('ao-favs',[]),recent=load('ao-recent',[]);
 function load(k,f){try{return JSON.parse(localStorage.getItem(k)||'null')||f}catch(e){return f}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
