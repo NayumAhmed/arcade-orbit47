@@ -304,6 +304,7 @@ $('#grid').querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>launch(b.dat
 $('#search').addEventListener('input',e=>{query=e.target.value.toLowerCase().trim();drawGames()});
 $('#close').onclick=closeGame;$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closeGame()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGame()});
+let browsingOrientation='portrait';
 function setAppOrientation(mode){
   try{if(window.ArcadeOrbit&&window.ArcadeOrbit.setOrientation)window.ArcadeOrbit.setOrientation(mode);}catch(e){}
   try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock(mode).catch(()=>{});}catch(e){}
@@ -321,7 +322,7 @@ if(id==='2048')game2048();
 if(id==='breakout')breakoutGame();
 if(id==='reaction')reactionGame();
 }
-function closeGame(){ $('#modal').classList.remove('open');$('#game').innerHTML='';document.body.style.overflow='';setAppOrientation('portrait'); }
+function closeGame(){ $('#modal').classList.remove('open');$('#game').innerHTML='';document.body.style.overflow='';setAppOrientation(browsingOrientation); }
 function snakeGame(){
 $('#game').innerHTML=`<p>Use arrow keys or the direction buttons. On mobile, swipe on the board.</p><h3>Score: <span id="score">0</span></h3><canvas id="snakeCanvas" width="360" height="360"></canvas><div class="controls"><button class="mainbtn" id="restart">Start / Restart</button></div><div class="pad"><span></span><button data-dir="0,-1">▲</button><span></span><button data-dir="-1,0">◀</button><button data-dir="0,1">▼</button><button data-dir="1,0">▶</button></div><p id="status">Press Start to play.</p>`;
 const c=$('#snakeCanvas'),x=c.getContext('2d'),N=18,S=20;let body,food,dir,timer,score=0,alive=false,sx=0,sy=0;
@@ -373,6 +374,7 @@ stage.onclick=()=>{if(state==='idle'||state==='done'){state='wait';stage.style.b
 drawTabs();drawGames();
 const orientationChooser=$('#orientationChooser');
 function chooseBrowsingOrientation(mode){
+  browsingOrientation=mode;
   setAppOrientation(mode);
   orientationChooser.classList.remove('show');
   try{sessionStorage.setItem('ao-orientation-chosen','1')}catch(e){}
