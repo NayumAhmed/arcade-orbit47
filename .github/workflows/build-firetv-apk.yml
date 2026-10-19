@@ -38,11 +38,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if ! gh release view firetv-latest --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create firetv-latest --repo "${GITHUB_REPOSITORY}"               --title "Arcade Orbit for Fire TV"               --notes "Install the Arcade Orbit WebView app on Amazon Fire TV / Firestick. This build loads the live Arcade Orbit website."
+            gh release create firetv-latest --repo "${GITHUB_REPOSITORY}" \\
+              --title "Arcade Orbit for Fire TV" \\
+              --notes "Install the Arcade Orbit WebView app on Amazon Fire TV / Firestick. This build loads the live Arcade Orbit website."
           fi
 
       - name: Publish APK
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload firetv-latest firetv/app/build/outputs/apk/debug/app-debug.apk#ArcadeOrbit.apk             --repo "${GITHUB_REPOSITORY}" --clobber
+          gh release upload firetv-latest firetv/app/build/outputs/apk/debug/app-debug.apk#ArcadeOrbit.apk --repo "${GITHUB_REPOSITORY}" --clobber
