@@ -1,82 +1,232 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#10131d">
-<title>Arcade Orbit — Browser Games Hub</title>
+<title>Arcade Orbit | Browser Games by Nayum Ahmed</title>
 <style>
-:root{color-scheme:dark;--bg:#10131d;--panel:#191e2b;--panel2:#252b3c;--text:#f4f5fa;--muted:#a4abc0;--accent:#c5ff55;--line:#30394d;--purple:#a89bff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 78% 4%,#222543 0,transparent 38%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
-header{display:flex;justify-content:space-between;align-items:center;padding:18px clamp(16px,4vw,56px);border-bottom:1px solid var(--line);gap:12px}.brand{font-weight:900;letter-spacing:.08em}.brand b{color:var(--accent)}header small{color:var(--muted)}
-main{max-width:1200px;margin:auto;padding:0 clamp(16px,4vw,56px)}.hero{padding:42px 0 32px;border-bottom:1px solid var(--line)}.eyebrow{color:var(--accent);font-size:11px;letter-spacing:.15em;text-transform:uppercase}.hero h1{font-size:clamp(38px,7vw,70px);line-height:1;margin:10px 0;letter-spacing:-.05em}.hero h1 span{color:var(--purple)}.hero p{color:var(--muted);max-width:560px;line-height:1.6}.toolbar{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:28px 0 14px;flex-wrap:wrap}.toolbar h2{margin:0}.search{background:var(--panel);border:1px solid var(--line);padding:12px;border-radius:10px;color:var(--text);font:inherit;min-width:min(100%,280px)}.cats{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 22px}.cat,button{border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);padding:10px 13px;font-weight:700;cursor:pointer}.cat.active,button.primary{background:var(--accent);color:#171b22;border-color:var(--accent)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}.art{height:100px;display:grid;place-items:center;background:linear-gradient(135deg,#292746,#263849);font-size:40px}.body{padding:14px}.meta{display:flex;justify-content:space-between;gap:8px;color:var(--accent);font-size:11px;text-transform:uppercase}.card h3{font-size:16px;margin:10px 0 6px}.card p{font-size:12px;line-height:1.5;color:var(--muted);min-height:38px}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.actions a{color:var(--accent);font-size:12px;overflow-wrap:anywhere}.license{font-size:10px;color:var(--muted);margin-top:10px}.notice{margin:28px 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:12px;line-height:1.6;color:var(--muted)}.player{display:none;position:fixed;inset:0;background:#05060dee;z-index:9;padding:12px;align-items:center;justify-content:center}.player.open{display:flex}.playerbox{width:min(800px,100%);max-height:96vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}.playerhead{display:flex;justify-content:space-between;align-items:center;gap:12px}.board{display:grid;grid-template-columns:repeat(3,min(24vw,100px));gap:7px;justify-content:center;margin:20px auto}.cell{height:min(24vw,100px);font-size:30px}.gamecanvas{width:100%;max-width:500px;display:block;margin:14px auto;background:#0b1020;border-radius:10px;touch-action:none}.gamecenter{text-align:center}.tileboard{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:400px;margin:16px auto;background:#30394d;padding:8px;border-radius:10px}.tile{aspect-ratio:1;display:grid;place-items:center;background:#454d60;border-radius:6px;font-weight:800}.tile:not(:empty){color:#10131d;background:#c5ff55}.memory{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:420px;margin:18px auto}.memory button{aspect-ratio:1;font-size:25px}.status{color:var(--accent)}footer{padding:24px;text-align:center;color:var(--muted);font-size:12px}
-@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card p{min-height:58px}.hero{padding-top:32px}}@media(max-width:420px){.grid{grid-template-columns:1fr}.card p{min-height:0}.art{height:85px}}
+:root{color-scheme:dark;--bg:#10131d;--panel:#191e2b;--panel2:#202637;--text:#f4f5fa;--muted:#a4abc0;--accent:#c5ff55;--purple:#a89bff;--line:#30384c}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 80% 0%,#272746 0,transparent 38%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button,input{font:inherit}
+button,a{-webkit-tap-highlight-color:transparent}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:17px clamp(16px,5vw,65px);border-bottom:1px solid var(--line);background:#10131ddd;backdrop-filter:blur(18px)}
+.brand{font-weight:900;letter-spacing:2px;font-size:17px}.brand b{color:var(--accent)}.topnote{font-size:11px;color:var(--muted);letter-spacing:1px}
+main{max-width:1200px;margin:auto;padding:0 clamp(16px,5vw,65px)}
+.hero{padding:55px 0 45px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--accent);font-size:11px;letter-spacing:3px;font-weight:800}
+h1{font-size:clamp(42px,8vw,78px);line-height:1;letter-spacing:-3px;margin:18px 0}
+h1 span{color:var(--purple)}
+.hero p:not(.eyebrow){max-width:620px;color:var(--muted);line-height:1.8}
+.primary{display:inline-block;margin-top:12px;background:var(--accent);color:#171b22;border-radius:12px;padding:14px 19px;font-weight:850}
+.library{padding:32px 0 18px}
+.library h2{font-size:30px;margin:0 0 8px;letter-spacing:-1px}
+.sub{color:var(--muted);font-size:13px}
+.search{width:100%;padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--text);outline:none;margin:18px 0}
+.search:focus{border-color:var(--purple);box-shadow:0 0 0 3px #a89bff22}
+.tabs{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 24px}
+.tab{border:1px solid #a89bff35;border-radius:999px;padding:10px 15px;background:#ffffff08;color:var(--muted);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);cursor:pointer;font-size:12px;font-weight:750;transition:.2s}
+.tab:hover{transform:translateY(-2px);border-color:var(--purple)}
+.tab.active{background:linear-gradient(130deg,var(--accent),#a7e85d);color:#151923;border-color:transparent;box-shadow:0 5px 22px #c5ff5525}
+.shelf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 15px}
+.shelf h3{font-size:17px;margin:0}.count{font-size:10px;letter-spacing:1px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.card{min-width:0;overflow:hidden;border:1px solid #ffffff12;border-radius:17px;background:linear-gradient(145deg,#ffffff09,#ffffff03);backdrop-filter:blur(12px);box-shadow:0 10px 30px #00000015;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:#a89bff77}
+.art{height:120px;display:grid;place-items:center;position:relative;overflow:hidden;background:var(--art,#292746)}
+.art:before,.art:after{content:"";position:absolute;width:160px;height:100px;border:1px solid #ffffff30;border-radius:50%;transform:rotate(-28deg)}
+.art:after{width:100px;height:160px;transform:rotate(45deg)}
+.emoji{position:relative;z-index:1;font-size:44px;filter:drop-shadow(0 8px 10px #0005)}
+.cardbody{padding:14px}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tag{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+.fav{border:0;background:transparent;color:var(--muted);font-size:24px;cursor:pointer}
+.fav.on{color:var(--accent)}
+.card h4{margin:8px 0;font-size:16px}
+.card p{margin:0 0 15px;color:var(--muted);font-size:12px;line-height:1.6;min-height:40px}
+.play{display:block;width:100%;border:0;border-radius:10px;background:var(--accent);color:#171b22;padding:11px;font-size:12px;font-weight:850;cursor:pointer}
+.play.external{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.notice{margin:35px 0;padding:20px;border:1px solid var(--line);background:#ffffff06;border-radius:15px;color:var(--muted);font-size:12px;line-height:1.8}
+.notice strong{color:var(--text)}
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:25px clamp(16px,5vw,65px);border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+footer strong{color:var(--text)}footer .credit{color:var(--accent)}
+.modal{display:none;position:fixed;inset:0;z-index:20;background:#050710ed;align-items:center;justify-content:center;padding:12px}
+.modal.open{display:flex}
+.modalbox{width:min(800px,100%);max-height:94vh;overflow:auto;border:1px solid var(--line);border-radius:17px;background:var(--panel);box-shadow:0 20px 80px #0009}
+.modalhead{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 16px;background:#191e2bee;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.modalhead h3{margin:0;font-size:15px}
+.close{border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);padding:9px 12px;cursor:pointer}
+.game{padding:20px;text-align:center}
+.game p{color:var(--muted);font-size:13px;line-height:1.6}
+.game button{border:1px solid var(--line);border-radius:9px;padding:10px 13px;background:var(--panel2);color:var(--text);cursor:pointer}
+.game button.mainbtn{background:var(--accent);color:#171b22;border:0;font-weight:800}
+.board{display:grid;grid-template-columns:repeat(3,min(24vw,95px));gap:8px;justify-content:center;margin:20px auto}
+.cell{height:min(24vw,95px);font-size:35px;font-weight:850;color:var(--accent)!important}
+.memory{display:grid;grid-template-columns:repeat(4,minmax(45px,75px));gap:8px;justify-content:center;margin:18px auto}
+.memory button{aspect-ratio:1;font-size:25px;padding:5px}
+.memory button.open{background:var(--accent);color:#171b22}
+canvas{display:block;width:min(100%,440px);height:auto;margin:14px auto;background:#10131d;border:1px solid var(--line);border-radius:12px;touch-action:none}
+.controls{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px}
+.pad{display:grid;grid-template-columns:repeat(3,48px);gap:5px;justify-content:center;margin:12px}
+.pad button{padding:10px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,65px));gap:6px;justify-content:center;background:#30364a;padding:7px;border-radius:12px;margin:18px auto}
+.tile{aspect-ratio:1;display:grid;place-items:center;border-radius:6px;background:#41485b;font-size:20px;font-weight:850}
+.tile.filled{background:#c5ff55;color:#171b22}
+.reactionstage{min-height:200px;display:grid;place-items:center;border-radius:15px;background:#3c4358;font-size:24px;font-weight:850;cursor:pointer;padding:20px;margin:18px 0}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.art{height:95px}.cardbody{padding:11px}.card h4{font-size:14px}.card p{font-size:11px;min-height:55px}.topnote{display:none}.hero{padding:40px 0 32px}}
+@media(max-width:390px){.grid{grid-template-columns:1fr}.art{height:110px}.card p{min-height:0}.hero h1{letter-spacing:-2px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><div class="brand">✦ ARCADE <b>ORBIT</b></div><small>PLAY IN YOUR BROWSER</small></header>
-<main>
-<section class="hero"><div class="eyebrow">YOUR NEXT QUICK ESCAPE</div><h1>Press play.<br><span>Find your flow.</span></h1><p>A mobile-friendly browser gaming hub. Play original mini-games here or open community-hosted games in a new tab. No third-party game files are redistributed by this page.</p><button class="primary" onclick="document.querySelector('#library').scrollIntoView({behavior:'smooth'})">Explore games ↓</button></section>
-<section id="library" class="toolbar"><div><div class="eyebrow">THE LIBRARY</div><h2>Choose your game</h2></div><input class="search" id="search" placeholder="Search games..." aria-label="Search games"></section>
-<nav id="cats" class="cats" aria-label="Filter games"></nav><p id="count" class="eyebrow"></p><section id="grid" class="grid"></section>
-<section class="notice"><b>Licensing and safety:</b> Original mini-games are included in this page. Community links below are external links, not verified endorsements. Availability may change; some sites may require original game files. Commercial game names and links are provided for discovery only. Only redistribute a game's code or assets when its license explicitly permits it. On Android and Fire TV, controls and fullscreen support vary by game and browser.</section>
-</main><footer>ARCADE ORBIT · A growing browser game library</footer>
-<div class="player" id="player" role="dialog" aria-modal="true"><div class="playerbox"><div class="playerhead"><h2 id="ptitle">Game</h2><button onclick="closeGame()">✕ Close</button></div><div id="gamearea" class="gamecenter"></div></div></div>
+<header>
+<a class="brand" href="#top">✦ ARCADE <b>ORBIT</b></a>
+<span class="topnote">PLAY · DISCOVER · REPEAT</span>
+</header>
+<main id="top">
+<section class="hero">
+<p class="eyebrow">YOUR NEXT QUICK ESCAPE</p>
+<h1>Press play.<br><span>Find your flow.</span></h1>
+<p>A mobile-friendly browser gaming hub. Play original mini-games here or explore community-hosted browser games in a new tab.</p>
+<a class="primary" href="#library">Explore games ↓</a>
+</section>
+<section class="library" id="library">
+<p class="eyebrow">THE LIBRARY</p>
+<h2>Choose your game</h2>
+<div class="sub">Original mini-games and community game links, all in one place.</div>
+<input id="search" class="search" type="search" placeholder="Search games..." aria-label="Search games">
+<nav id="tabs" class="tabs" aria-label="Game categories"></nav>
+<div class="shelf"><h3 id="shelfTitle">All games</h3><span class="count" id="count"></span></div>
+<section id="grid" class="grid" aria-live="polite"></section>
+</section>
+<section class="notice"><strong>Licensing and safety:</strong> Original mini-games are included in this page. Community links open external websites and are not endorsements. Some sites may require original game files. This page does not redistribute third-party game files. Verify each game's licensing before reusing code or assets.</section>
+</main>
+<footer><strong>ARCADE ORBIT</strong><span>Browser gaming hub</span><span class="credit">✦ Created by Nayum Ahmed</span></footer>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Game player">
+<div class="modalbox">
+<div class="modalhead"><h3 id="gameTitle">Now playing</h3><button class="close" id="close">✕ Close</button></div>
+<div id="game" class="game"></div>
+</div>
+</div>
 <script>
 const games=[
-{id:'snake',name:'Snake',cat:'Arcade',icon:'🐍',desc:'Collect food, grow longer and avoid your tail.',type:'internal',license:'Original mini-game · included'},
-{id:'tic',name:'Tic-Tac-Toe',cat:'Board',icon:'⭕',desc:'A quick two-player strategy classic.',type:'internal',license:'Original mini-game · included'},
-{id:'memory',name:'Memory Match',cat:'Puzzle',icon:'🧠',desc:'Flip cards and find matching pairs.',type:'internal',license:'Original mini-game · included'},
-{id:'2048',name:'2048',cat:'Puzzle',icon:'🔢',desc:'Combine matching tiles. Use arrow keys or buttons.',type:'internal',license:'Original implementation · included'},
-{id:'breakout',name:'Breakout',cat:'Arcade',icon:'🧱',desc:'Bounce the ball to clear every brick.',type:'internal',license:'Original mini-game · included'},
-{id:'reaction',name:'Reaction Test',cat:'Casual',icon:'⚡',desc:'Tap when the panel turns green.',type:'internal',license:'Original mini-game · included'},
-{id:'moon',name:'Moon Zombies',cat:'Action',icon:'🌙',desc:'Community-hosted zombie game link; not verified.',url:'https://moon-zombies.pages.dev',license:'External link only · license unknown'},
-{id:'gtavc',name:'GTA: Vice City (WASM)',cat:'Action',icon:'🚗',desc:'Community browser port; original game files may be required.',url:'https://joncodeofficial.github.io/gta-vice-city-wasm',license:'Commercial game · link only'},
-{id:'quake3',name:'Quake III Arena',cat:'FPS',icon:'🎯',desc:'Browser-hosted Quake III experience; requirements may vary.',url:'https://q3.pieter.com',license:'Engine/assets have separate terms'},
-{id:'bo1',name:'Black Ops Zombies',cat:'FPS',icon:'🧟',desc:'Community-hosted experience; licensing and availability unverified.',url:'https://vel.gg/bo1z',license:'Commercial game · link only'},
-{id:'hl',name:'Half-Life',cat:'FPS',icon:'🔬',desc:'Community browser port; original game files may be required.',url:'https://pixelsoft.github.io/hl/',license:'Engine/assets have separate terms'},
-{id:'skate3',name:'Skate 3',cat:'Sports',icon:'🛹',desc:'Community link; browser play and controller support unverified.',url:'https://skate.aaddpp.net',license:'Commercial game · link only'},
-{id:'halo',name:'Halo: Combat Evolved',cat:'FPS',icon:'🪖',desc:'Community-hosted experience; requirements unverified.',url:'https://mitchellhynes.com/halo',license:'Commercial game · link only'},
-{id:'diablo',name:'Diablo Web',cat:'RPG',icon:'😈',desc:'Community web port; may require original game files.',url:'https://johnimril.github.io/diablo_web/',license:'Game assets may be proprietary'},
-{id:'mw2',name:'Modern Warfare 2',cat:'FPS',icon:'🎯',desc:'Community-hosted link; availability and rights unverified.',url:'https://ovz-game-production.up.railway.app',license:'Commercial game · link only'},
-{id:'kino',name:'Kino der Toten',cat:'FPS / Zombies',icon:'🧟',desc:'Community-hosted zombies experience; uptime unverified.',url:'https://kino-der-toten.pages.dev',license:'Commercial game · link only'},
-{id:'pes6',name:'PES 6',cat:'Sports',icon:'⚽',desc:'Community-hosted football game link; rights unverified.',url:'https://pes6.optijuegos.net',license:'Commercial game · link only'},
-{id:'ut',name:'Unreal Tournament',cat:'FPS',icon:'💥',desc:'Browser-hosted experience; game-data requirements may vary.',url:'https://ut.pieter.com',license:'Engine/assets have separate terms'},
-{id:'bo2',name:'Black Ops 2',cat:'FPS',icon:'🎮',desc:'Community-hosted link; proprietary assets and availability unverified.',url:'https://vibeslops.luckeysystems.com',license:'Commercial game · link only'},
-{id:'simpsons',name:'The Simpsons: Hit & Run',cat:'Action',icon:'🍩',desc:'Community web build; game data may be required.',url:'https://shar-wasm.cjoseph.workers.dev/?skipmovie',license:'Commercial game · link only'},
-{id:'quake1',name:'Quake',cat:'FPS',icon:'💥',desc:'Browser-hosted experience; game-data requirements may vary.',url:'https://q1.pieter.com',license:'Engine/assets have separate terms'},
-{id:'skaterust',name:'Skate Rust',cat:'Action',icon:'🛹',desc:'Community link; source and mobile support unverified.',url:'https://global-terror.net',license:'External link only · license unknown'},
-{id:'halomobile',name:'Halo CE Mobile',cat:'FPS',icon:'📱',desc:'Mobile-oriented community link; compatibility unverified.',url:'https://hcemobile.com',license:'Commercial game · link only'},
-{id:'cheese',name:'BO3 Cheese Cube',cat:'FPS / Zombies',icon:'🧀',desc:'Community-hosted zombies experience; requirements unverified.',url:'https://cheese-cube.pages.dev',license:'Commercial game · link only'},
-{id:'rtcw',name:'Return to Castle Wolfenstein',cat:'FPS',icon:'🐺',desc:'Browser-hosted community port; game files may be required.',url:'https://rtcw.pieter.com',license:'Engine/assets have separate terms'},
-{id:'surf',name:'CS Surf',cat:'Action',icon:'🏄',desc:'Community-hosted surf game link; compatibility unverified.',url:'https://surfd.net',license:'External link only · license unknown'},
-{id:'webxash',name:'Half-Life / CS 1.6 WebXash',cat:'FPS',icon:'🎮',desc:'Community WebXash port; original game data may be needed.',url:'https://x8bitrain.github.io/webXash/',license:'Engine/assets have separate terms'},
-{id:'quake2',name:'Quake II',cat:'FPS',icon:'💥',desc:'Browser-hosted experience; game-data requirements may vary.',url:'https://q2.pieter.com',license:'Engine/assets have separate terms'},
-{id:'hedgewars',name:'Hedgewars / WebWars',cat:'Strategy',icon:'🐛',desc:'Turn-based artillery strategy game link; verify hosted build terms.',url:'https://webwars.link',license:'Check project and hosted build terms'},
-{id:'wasm',name:'WASM Arcade',cat:'Resources',icon:'🧱',desc:'Discovery portal for more browser game links; verify each license.',url:'https://wasmarcade.com',license:'Varies by linked project'},
-{id:'github',name:'Open-source HTML5 game projects',cat:'Resources',icon:'🌐',desc:'Browse source repositories and review licenses before importing.',url:'https://github.com/topics/html5-games',license:'Varies by repository'}
+{id:'snake',title:'Snake',cat:'Arcade',icon:'🐍',desc:'Eat the food, grow longer, and avoid crashing.',local:true},
+{id:'tic',title:'Tic-Tac-Toe',cat:'Board',icon:'⭕',desc:'Challenge a friend in this classic two-player game.',local:true},
+{id:'memory',title:'Memory Match',cat:'Puzzle',icon:'🧠',desc:'Flip cards and match all the pairs.',local:true},
+{id:'2048',title:'2048',cat:'Puzzle',icon:'🔢',desc:'Combine matching tiles and aim for 2048.',local:true},
+{id:'breakout',title:'Breakout',cat:'Arcade',icon:'🧱',desc:'Bounce the ball and clear the bricks.',local:true},
+{id:'reaction',title:'Reaction Test',cat:'Casual',icon:'⚡',desc:'Wait for green and test your reflexes.',local:true},
+{id:'moon',title:'Moon Zombies',cat:'Action',icon:'🧟',desc:'Community-hosted zombie game link.',url:'https://moon-zombies.pages.dev'},
+{id:'gta',title:'GTA: Vice City WASM',cat:'Action',icon:'🚘',desc:'Community browser port; may require original game files.',url:'https://joncodeofficial.github.io/gta-vice-city-wasm'},
+{id:'quake3',title:'Quake III Arena',cat:'FPS',icon:'💥',desc:'Community-hosted arena shooter experience.',url:'https://q3.pieter.com'},
+{id:'bo1',title:'Black Ops Zombies',cat:'FPS',icon:'🧟',desc:'Community-hosted zombies game link.',url:'https://vel.gg/bo1z'},
+{id:'half-life',title:'Half-Life',cat:'FPS',icon:'🔬',desc:'Community browser port; game files may be required.',url:'https://pixelsoft.github.io/hl/'},
+{id:'skate3',title:'Skate 3',cat:'Sports',icon:'🛹',desc:'Community game link; browser support may vary.',url:'https://skate.aaddpp.net'},
+{id:'halo',title:'Halo: Combat Evolved',cat:'FPS',icon:'🪐',desc:'Community-hosted experience; availability may vary.',url:'https://mitchellhynes.com/halo'},
+{id:'diablo',title:'Diablo Web',cat:'RPG',icon:'😈',desc:'Community web port; original files may be required.',url:'https://johnimril.github.io/diablo_web/'},
+{id:'mw2',title:'Modern Warfare 2',cat:'FPS',icon:'🎯',desc:'External community link; not verified by this site.',url:'https://ovz-game-production.up.railway.app'},
+{id:'kino',title:'Kino der Toten',cat:'FPS',icon:'🧟',desc:'Community-hosted zombies experience.',url:'https://kino-der-toten.pages.dev'},
+{id:'pes6',title:'PES 6',cat:'Sports',icon:'⚽',desc:'Community football game link.',url:'https://pes6.optijuegos.net'},
+{id:'ut',title:'Unreal Tournament',cat:'FPS',icon:'🚀',desc:'Community-hosted arena shooter link.',url:'https://ut.pieter.com'},
+{id:'bo2',title:'Black Ops 2',cat:'FPS',icon:'🎮',desc:'Community-hosted game link; availability may vary.',url:'https://vibeslops.luckeysystems.com'},
+{id:'simpsons',title:'The Simpsons: Hit & Run',cat:'Action',icon:'🚗',desc:'Community web build; original game data may be required.',url:'https://shar-wasm.cjoseph.workers.dev/?skipmovie'},
+{id:'quake',title:'Quake',cat:'FPS',icon:'💥',desc:'Community-hosted classic shooter link.',url:'https://q1.pieter.com'},
+{id:'wolf',title:'Return to Castle Wolfenstein',cat:'FPS',icon:'🪖',desc:'Community browser port; files may be required.',url:'https://rtcw.pieter.com'},
+{id:'surf',title:'CS Surf',cat:'Action',icon:'🏄',desc:'Community-hosted surf game link.',url:'https://surfd.net'},
+{id:'webxash',title:'Half-Life / CS 1.6 WebXash',cat:'FPS',icon:'🔫',desc:'Community WebXash port; original game data may be needed.',url:'https://x8bitrain.github.io/webXash/'},
+{id:'quake2',title:'Quake II',cat:'FPS',icon:'💥',desc:'Community-hosted classic shooter link.',url:'https://q2.pieter.com'},
+{id:'hedge',title:'Hedgewars / WebWars',cat:'Strategy',icon:'🐹',desc:'Turn-based artillery strategy game link.',url:'https://webwars.link'},
+{id:'wasm',title:'WASM Arcade',cat:'Resources',icon:'🌐',desc:'Discover more browser game projects.',url:'https://wasmarcade.com'},
+{id:'html5',title:'HTML5 Game Projects',cat:'Resources',icon:'🧑‍💻',desc:'Explore open-source game repositories and check each license.',url:'https://github.com/topics/html5-games'}
 ];
-let category='All',query='';
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function drawCats(){const cats=['All',...new Set(games.map(g=>g.cat))];document.querySelector('#cats').innerHTML=cats.map(c=>`<button class="cat ${c===category?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{category=b.dataset.cat;drawCats();drawGames()})}
-function drawGames(){let list=games.filter(g=>(category==='All'||g.cat===category)&&`${g.name} ${g.cat} ${g.desc}`.toLowerCase().includes(query));document.querySelector('#count').textContent=`${list.length} GAMES`;document.querySelector('#grid').innerHTML=list.map(g=>`<article class="card"><div class="art">${g.icon}</div><div class="body"><div class="meta"><span>${esc(g.cat)}</span><span>${g.type?'PLAYABLE':'EXTERNAL'}</span></div><h3>${esc(g.name)}</h3><p>${esc(g.desc)}</p><div class="actions">${g.type?`<button class="primary" data-play="${g.id}">Play now</button>`:`<a href="${g.url}" target="_blank" rel="noopener noreferrer">Open game ↗</a>`}</div><div class="license">${esc(g.license)}</div></div></article>`).join('');document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>play(b.dataset.play))}
-document.querySelector('#search').addEventListener('input',e=>{query=e.target.value.toLowerCase().trim();drawGames()});
-function openGame(id,title,content){document.querySelector('#ptitle').textContent=title;document.querySelector('#gamearea').innerHTML=content;document.querySelector('#player').classList.add('open')}
-function closeGame(){document.querySelector('#player').classList.remove('open');document.querySelector('#gamearea').innerHTML=''}
-function play(id){
-if(id==='tic'){openGame(id,'Tic-Tac-Toe',`<p id="ticstatus" class="status">Player X's turn</p><div class="board" id="ticboard"></div><button onclick="ticReset()">New game</button>`);ticReset();return}
-if(id==='memory'){openGame(id,'Memory Match',`<p id="memstatus" class="status">Find all pairs.</p><div class="memory" id="memboard"></div><button onclick="memReset()">Restart</button>`);memReset();return}
-if(id==='2048'){openGame(id,'2048',`<p id="s2048" class="status">Score: 0</p><div class="tileboard" id="b2048"></div><div>${['up','left','down','right'].map(d=>`<button onclick="move2048('${d}')">${({up:'↑',left:'←',down:'↓',right:'→'})[d]}</button>`).join(' ')}</div><p>Arrow keys or tap buttons.</p>`);reset2048();return}
-if(id==='reaction'){openGame(id,'Reaction Test',`<p>Tap when the panel turns green.</p><button id="reactstage" style="width:100%;height:220px;font-size:24px" onclick="reactClick()">Tap to start</button><h3 id="reactresult" class="status"></h3>`);return}
-if(id==='snake'){openGame(id,'Snake',`<p class="status">Score: <span id="snscore">0</span> · Use arrow keys or buttons</p><canvas id="sncanvas" class="gamecanvas" width="320" height="320"></canvas><div>${['↑','←','↓','→'].map((d,i)=>`<button onclick="snDir(${i})">${d}</button>`).join(' ')}</div><button onclick="snStart()">Start / Restart</button><p id="snstatus">Press start.</p>`);snInit();return}
-if(id==='breakout'){openGame(id,'Breakout',`<p>Move paddle with arrow keys or drag on the canvas.</p><canvas id="brcanvas" class="gamecanvas" width="360" height="260"></canvas><button onclick="brStart()">Start / Restart</button><p id="brstatus" class="status">Break every brick!</p>`);brInit();return}
+const colors={Arcade:'#292746',Board:'#273d42',Puzzle:'#38324e',Casual:'#453044',Action:'#4a293a',FPS:'#263849',Sports:'#24483e',RPG:'#46304a',Strategy:'#3b3c28',Resources:'#263849'};
+let category='All games',query='',favorites=load('ao-favs',[]),recent=load('ao-recent',[]);
+function load(k,f){try{return JSON.parse(localStorage.getItem(k)||'null')||f}catch(e){return f}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const $=s=>document.querySelector(s);
+function drawTabs(){
+const cats=['All games','Favorites','Recently played',...new Set(games.map(g=>g.cat))];
+$('#tabs').innerHTML=cats.map(c=>`<button class="tab ${category===c?'active':''}" data-cat="${c}">${c}</button>`).join('');
+$('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{category=b.dataset.cat;drawTabs();drawGames()});
 }
-let ticA=[],ticP='X',ticDone=false;function ticReset(){ticA=Array(9).fill('');ticP='X';ticDone=false;ticRender();document.querySelector('#ticstatus').textContent="Player X's turn"}function ticRender(){document.querySelector('#ticboard').innerHTML=ticA.map((v,i)=>`<button class="cell" onclick="ticMove(${i})">${v}</button>`).join('')}function ticMove(i){if(ticDone||ticA[i])return;ticA[i]=ticP;ticRender();let wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];if(wins.some(w=>w.every(k=>ticA[k]===ticP))){document.querySelector('#ticstatus').textContent=`Player ${ticP} wins!`;ticDone=true}else if(ticA.every(Boolean)){document.querySelector('#ticstatus').textContent="It's a draw!";ticDone=true}else{ticP=ticP==='X'?'O':'X';document.querySelector('#ticstatus').textContent=`Player ${ticP}'s turn`}}
-let memDeck=[],memOpen=[],memLock=false,memPairs=0,memMoves=0;function memReset(){memDeck=['🍋','🚀','🎮','🌙','🐸','⚽','🍒','⭐', '🍋','🚀','🎮','🌙','🐸','⚽','🍒','⭐'].sort(()=>Math.random()-.5);memOpen=[];memLock=false;memPairs=0;memMoves=0;memRender();memStatus()}function memStatus(){document.querySelector('#memstatus').textContent=memPairs===8?`You won in ${memMoves} moves!`:`Moves: ${memMoves} · Pairs: ${memPairs}/8`}function memRender(){document.querySelector('#memboard').innerHTML=memDeck.map((v,i)=>`<button onclick="memFlip(${i})">${v===null?'✓':memOpen.includes(i)?v:'?'}</button>`).join('')}function memFlip(i){if(memLock||memOpen.includes(i)||memDeck[i]===null)return;memOpen.push(i);memRender();if(memOpen.length===2){memMoves++;let [a,b]=memOpen;if(memDeck[a]===memDeck[b]){memDeck[a]=memDeck[b]=null;memPairs++;memOpen=[];memStatus();memRender()}else{memLock=true;setTimeout(()=>{memOpen=[];memLock=false;memRender();memStatus()},650)}memStatus()}}
-let grid2048=[],score2048=0;function reset2048(){grid2048=Array(16).fill(0);score2048=0;add2048();add2048();render2048()}function add2048(){let e=grid2048.map((v,i)=>v?null:i).filter(v=>v!==null);if(e.length)grid2048[e[Math.random()*e.length|0]]=Math.random()<.9?2:4}function render2048(){let el=document.querySelector('#b2048');if(!el)return;el.innerHTML=grid2048.map(v=>`<div class="tile">${v||''}</div>`).join('');document.querySelector('#s2048').textContent='Score: '+score2048}function move2048(d){let old=grid2048.join(','),rows=Array.from({length:4},(_,r)=>grid2048.slice(r*4,r*4+4));let left=rows;if(d==='right')left=rows.map(r=>r.slice().reverse());if(d==='up')left=Array.from({length:4},(_,c)=>rows.map(r=>r[c]));if(d==='down')left=Array.from({length:4},(_,c)=>rows.map(r=>r[3-c]).reverse());left=left.map(row=>{let q=row.filter(Boolean);for(let i=0;i<q.length-1;i++)if(q[i]===q[i+1]){q[i]*=2;score2048+=q[i];q.splice(i+1,1)}return [...q,...Array(4-q.length).fill(0)]});if(d==='left')rows=left;if(d==='right')rows=left.map(r=>r.reverse());if(d==='up')rows=Array.from({length:4},(_,c)=>left.map(r=>r[c]));if(d==='down')rows=Array.from({length:4},(_,c)=>left.map(r=>r[3-c]).reverse());grid2048=rows.flat();if(grid2048.join(',')!==old)add2048();render2048()}document.addEventListener('keydown',e=>{if(!document.querySelector('#player').classList.contains('open'))return;let m={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(m[e.key]&&document.querySelector('#b2048')){e.preventDefault();move2048(m[e.key])}});
-let reactState='idle',reactTimer,reactStart=0;function reactClick(){let b=document.querySelector('#reactstage'),r=document.querySelector('#reactresult');if(reactState==='idle'||reactState==='done'){reactState='wait';b.style.background='#b84959';b.textContent='Wait for green…';r.textContent='';reactTimer=setTimeout(()=>{reactState='go';reactStart=performance.now();b.style.background='#64b95e';b.textContent='TAP NOW!'},900+Math.random()*2600)}else if(reactState==='wait'){clearTimeout(reactTimer);reactState='done';b.style.background='';b.textContent='Too soon — tap to retry';r.textContent='False start'}else{reactState='done';b.style.background='';b.textContent='Tap to try again';r.textContent=Math.round(performance.now()-reactStart)+' ms';}}
-let snTimer,snake=[],snFood={x:10,y:10},snD={x:1,y:0},snQ={x:1,y:0};function snInit(){clearInterval(snTimer);let c=document.querySelector('#sncanvas'),ctx=c.getContext('2d');ctx.fillStyle='#10131d';ctx.fillRect(0,0,320,320)}function snStart(){clearInterval(snTimer);snake=[{x:5,y:5},{x:4,y:5},{x:3,y:5}];snFood={x:9,y:8};snD=snQ={x:1,y:0};document.querySelector('#snstatus').textContent='Good luck!';snTimer=setInterval(snTick,140);snDraw()}function snDir(i){let d=[{x:0,y:-1},{x:-1,y:0},{x:0,y:1},{x:1,y:0}][i];if(d.x!==-snD.x||d.y!==-snD.y)snQ=d}function snDraw(){let c=document.querySelector('#sncanvas');if(!c)return;let x=c.getContext('2d');x.fillStyle='#10131d';x.fillRect(0,0,320,320);x.fillStyle='#ff7d8b';x.fillRect(snFood.x*16,snFood.y*16,14,14);snake.forEach((p,i)=>{x.fillStyle=i?'#81c95a':'#c5ff55';x.fillRect(p.x*16+1,p.y*16+1,14,14)})}function snTick(){snD=snQ;let h={x:snake[0].x+snD.x,y:snake[0].y+snD.y};if(h.x<0||h.y<0||h.x>=20||h.y>=20||snake.some((p,i)=>i&&p.x===h.x&&p.y===h.y)){clearInterval(snTimer);document.querySelector('#snstatus').textContent='Game over — restart to play again.';return}snake.unshift(h);if(h.x===snFood.x&&h.y===snFood.y){document.querySelector('#snscore').textContent=+document.querySelector('#snscore').textContent+1;snFood={x:Math.random()*20|0,y:Math.random()*20|0}}else snake.pop();snDraw()}document.addEventListener('keydown',e=>{if(!document.querySelector('#player').classList.contains('open'))return;let d={ArrowUp:0,ArrowLeft:1,ArrowDown:2,ArrowRight:3}[e.key];if(d!==undefined&&document.querySelector('#sncanvas'))snDir(d)});
-let brTimer,brX=135,brBall={x:180,y:220,dx:2,dy:-2},bricks=[];function brInit(){clearInterval(brTimer);let c=document.querySelector('#brcanvas');if(!c)return;c.getContext('2d').clearRect(0,0,360,260);bricks=[];for(let r=0;r<4;r++)for(let q=0;q<7;q++)bricks.push({x:7+q*50,y:20+r*18,on:true})}function brStart(){brInit();brX=135;brBall={x:180,y:220,dx:2,dy:-2};document.querySelector('#brstatus').textContent='Break every brick!';clearInterval(brTimer);brTimer=setInterval(brTick,16)}function brTick(){let c=document.querySelector('#brcanvas');if(!c)return;let x=c.getContext('2d');brBall.x+=brBall.dx;brBall.y+=brBall.dy;if(brBall.x<5||brBall.x>355)brBall.dx*=-1;if(brBall.y<5)brBall.dy*=-1;if(brBall.y>230&&brBall.x>brX&&brBall.x<brX+90)brBall.dy=-Math.abs(brBall.dy);for(let b of bricks)if(b.on&&brBall.x>b.x&&brBall.x<b.x+44&&brBall.y>b.y&&brBall.y<b.y+13){b.on=false;brBall.dy*=-1;break}if(brBall.y>260||!bricks.some(b=>b.on)){clearInterval(brTimer);document.querySelector('#brstatus').textContent=brBall.y>260?'Ball lost — restart.':'You cleared every brick!'}x.fillStyle='#10131d';x.fillRect(0,0,360,260);bricks.filter(b=>b.on).forEach(b=>{x.fillStyle='#a89bff';x.fillRect(b.x,b.y,44,13)});x.fillStyle='#c5ff55';x.fillRect(brX,242,90,8);x.beginPath();x.arc(brBall.x,brBall.y,5,0,7);x.fill()}document.addEventListener('keydown',e=>{if(!document.querySelector('#player').classList.contains('open')||!document.querySelector('#brcanvas'))return;if(e.key==='ArrowLeft')brX=Math.max(0,brX-15);if(e.key==='ArrowRight')brX=Math.min(270,brX+15)});document.querySelector('#player').addEventListener('pointermove',e=>{if(!e.buttons&&e.pointerType!=='touch')return;let c=document.querySelector('#brcanvas');if(!c)return;let r=c.getBoundingClientRect();brX=Math.max(0,Math.min(270,(e.clientX-r.left)/r.width*360-45)});
-drawCats();drawGames();
+function drawGames(){
+let list=games.filter(g=>(category==='All games'||(category==='Favorites'?favorites.includes(g.id):category==='Recently played'?recent.includes(g.id):g.cat===category))&&(`${g.title} ${g.cat} ${g.desc}`).toLowerCase().includes(query));
+$('#shelfTitle').textContent=category;$('#count').textContent=list.length+' GAMES';
+if(!list.length){$('#grid').innerHTML='<div class="notice">No games found. Try another search or category.</div>';return}
+$('#grid').innerHTML=list.map(g=>`<article class="card"><div class="art" style="--art:${colors[g.cat]||'#292746'}"><span class="emoji">${g.icon}</span></div><div class="cardbody"><div class="meta"><span class="tag">${g.cat}</span><button class="fav ${favorites.includes(g.id)?'on':''}" data-fav="${g.id}" aria-label="Toggle favourite">${favorites.includes(g.id)?'★':'☆'}</button></div><h4>${g.title}</h4><p>${g.desc}</p><button class="play ${g.local?'':'external'}" data-play="${g.id}">${g.local?'▶ Play now':'↗ Open game website'}</button></div></article>`).join('');
+$('#grid').querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{let id=b.dataset.fav;favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];save('ao-favs',favorites);drawGames()});
+$('#grid').querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>launch(b.dataset.play));
+}
+$('#search').addEventListener('input',e=>{query=e.target.value.toLowerCase().trim();drawGames()});
+$('#close').onclick=closeGame;$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closeGame()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGame()});
+function launch(id){
+const g=games.find(x=>x.id===id);if(!g)return;
+if(g.url){window.open(g.url,'_blank','noopener,noreferrer');return}
+recent=[id,...recent.filter(x=>x!==id)].slice(0,12);save('ao-recent',recent);
+$('#gameTitle').textContent=g.title;$('#modal').classList.add('open');document.body.style.overflow='hidden';
+if(id==='snake')snakeGame();
+if(id==='tic')ticGame();
+if(id==='memory')memoryGame();
+if(id==='2048')game2048();
+if(id==='breakout')breakoutGame();
+if(id==='reaction')reactionGame();
+}
+function closeGame(){ $('#modal').classList.remove('open');$('#game').innerHTML='';document.body.style.overflow=''; }
+function snakeGame(){
+$('#game').innerHTML=`<p>Use arrow keys or the direction buttons. On mobile, swipe on the board.</p><h3>Score: <span id="score">0</span></h3><canvas id="snakeCanvas" width="360" height="360"></canvas><div class="controls"><button class="mainbtn" id="restart">Start / Restart</button></div><div class="pad"><span></span><button data-dir="0,-1">▲</button><span></span><button data-dir="-1,0">◀</button><button data-dir="0,1">▼</button><button data-dir="1,0">▶</button></div><p id="status">Press Start to play.</p>`;
+const c=$('#snakeCanvas'),x=c.getContext('2d'),N=18,S=20;let body,food,dir,timer,score=0,alive=false,sx=0,sy=0;
+function reset(){clearInterval(timer);body=[{x:8,y:9},{x:7,y:9},{x:6,y:9}];food={x:13,y:9};dir={x:1,y:0};score=0;alive=true;$('#score').textContent=score;$('#status').textContent='Game on!';draw();timer=setInterval(tick,125)}
+function draw(){x.fillStyle='#191e2b';x.fillRect(0,0,360,360);x.fillStyle='#ff7d8b';x.fillRect(food.x*S+3,food.y*S+3,S-6,S-6);body.forEach((p,i)=>{x.fillStyle=i?'#79c95d':'#c5ff55';x.fillRect(p.x*S+2,p.y*S+2,S-4,S-4)})}
+function tick(){let h={x:body[0].x+dir.x,y:body[0].y+dir.y};if(h.x<0||h.y<0||h.x>=N||h.y>=N||body.some(p=>p.x===h.x&&p.y===h.y)){alive=false;clearInterval(timer);$('#status').textContent='Game over! Press Start to try again.';return}body.unshift(h);if(h.x===food.x&&h.y===food.y){score++;$('#score').textContent=score;do{food={x:Math.random()*N|0,y:Math.random()*N|0}}while(body.some(p=>p.x===food.x&&p.y===food.y))}else body.pop();draw()}
+function set(dx,dy){if(dx!==-dir.x||dy!==-dir.y)dir={x:dx,y:dy}}
+$('#restart').onclick=reset;$('#game').querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>set(...b.dataset.dir.split(',').map(Number)));
+document.addEventListener('keydown',key);function key(e){const m={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};if(m[e.key]&&$('#modal').classList.contains('open')&&$('#gameTitle').textContent==='Snake'){e.preventDefault();set(...m[e.key])}}
+c.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});c.addEventListener('touchend',e=>{let dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))>18)set(Math.abs(dx)>Math.abs(dy)?Math.sign(dx):0,Math.abs(dy)>Math.abs(dx)?Math.sign(dy):0)},{passive:true});
+}
+function ticGame(){
+$('#game').innerHTML='<p>Take turns placing X and O. Three in a row wins.</p><h3 id="ticStatus">Player X turn</h3><div class="board" id="ticBoard"></div><button class="mainbtn" id="ticReset">New game</button>';
+let a=Array(9).fill(''),p='X',done=false;const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function render(){$('#ticBoard').innerHTML=a.map((v,i)=>`<button class="cell" data-i="${i}">${v}</button>`).join('');$('#ticBoard').querySelectorAll('button').forEach(b=>b.onclick=()=>move(+b.dataset.i))}
+function move(i){if(done||a[i])return;a[i]=p;render();if(wins.some(w=>w.every(k=>a[k]===p))){$('#ticStatus').textContent='Player '+p+' wins!';done=true}else if(a.every(Boolean)){$('#ticStatus').textContent='It is a draw!';done=true}else{p=p==='X'?'O':'X';$('#ticStatus').textContent='Player '+p+' turn'}}
+$('#ticReset').onclick=()=>{a=Array(9).fill('');p='X';done=false;$('#ticStatus').textContent='Player X turn';render()};render();
+}
+function memoryGame(){
+$('#game').innerHTML='<p>Flip two cards and find all matching pairs.</p><h3 id="memStatus">Moves: 0</h3><div class="memory" id="memBoard"></div><button class="mainbtn" id="memReset">Restart</button>';
+const icons=['🍋','🚀','🎮','🌙','🐸','⚽','🍒','⭐'];let deck=[],open=[],locked=false,moves=0,matched=0;
+function reset(){deck=[...icons,...icons].sort(()=>Math.random()-.5);open=[];locked=false;moves=0;matched=0;render()}
+function render(){$('#memStatus').textContent=matched===16?`You won in ${moves} moves!`:`Moves: ${moves} · Pairs: ${matched/2}/8`,$('#memBoard').innerHTML=deck.map((v,i)=>`<button class="${open.includes(i)||v===null?'open':''}" data-i="${i}">${open.includes(i)||v===null?(v||'✓'):'?'}</button>`).join('');$('#memBoard').querySelectorAll('button').forEach(b=>b.onclick=()=>flip(+b.dataset.i))}
+function flip(i){if(locked||open.includes(i)||deck[i]===null)return;open.push(i);render();if(open.length===2){moves++;let [a,b]=open;if(deck[a]===deck[b]){deck[a]=deck[b]=null;matched+=2;open=[];render()}else{locked=true;setTimeout(()=>{open=[];locked=false;render()},650)}$('#memStatus').textContent=`Moves: ${moves} · Pairs: ${matched/2}/8`}}
+$('#memReset').onclick=reset;reset();
+}
+function game2048(){
+$('#game').innerHTML='<p>Use arrow keys or the buttons to combine equal tiles.</p><h3 id="score2048">Score: 0</h3><div class="tiles" id="tiles"></div><div class="controls">'+['up','left','down','right'].map(d=>`<button data-move="${d}">${({up:'↑',left:'←',down:'↓',right:'→'})[d]}</button>`).join('')+'<button class="mainbtn" id="reset2048">Restart</button></div><p id="status2048"></p>';
+let a=Array(16).fill(0),score=0;
+function add(){let empty=a.map((v,i)=>v?null:i).filter(v=>v!==null);if(empty.length)a[empty[Math.random()*empty.length|0]]=Math.random()<.9?2:4}
+function render(){$('#tiles').innerHTML=a.map(v=>`<div class="tile ${v?'filled':''}">${v||''}</div>`).join('');$('#score2048').textContent='Score: '+score}
+function move(d){let old=a.join(','),rows=Array.from({length:4},(_,r)=>a.slice(r*4,r*4+4));if(d==='up')rows=transpose(rows);if(d==='down')rows=transpose(rows).map(r=>r.reverse());if(d==='right')rows=rows.map(r=>r.reverse());rows=rows.map(row=>{let q=row.filter(Boolean);for(let i=0;i<q.length-1;i++)if(q[i]===q[i+1]){q[i]*=2;score+=q[i];q.splice(i+1,1)}return [...q,...Array(4-q.length).fill(0)]});if(d==='right')rows=rows.map(r=>r.reverse());if(d==='up')rows=transpose(rows);if(d==='down')rows=transpose(rows.map(r=>r.reverse()));a=rows.flat();if(a.join(',')!==old)add();render();if(!a.includes(0))$('#status2048').textContent='Board full — restart to play again.'}
+function transpose(m){return m[0].map((_,i)=>m.map(r=>r[i]))}
+$('#game').querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>move(b.dataset.move));$('#reset2048').onclick=()=>{a=Array(16).fill(0);score=0;add();add();render();$('#status2048').textContent=''};document.addEventListener('keydown',e=>{if(!$('#modal').classList.contains('open')||$('#gameTitle').textContent!=='2048')return;const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};if(m[e.key]){e.preventDefault();move(m[e.key])}});add();add();render();
+}
+function breakoutGame(){
+$('#game').innerHTML='<p>Move the paddle using touch, mouse, or arrow keys.</p><canvas id="breakCanvas" width="420" height="300"></canvas><div class="controls"><button class="mainbtn" id="breakReset">Restart</button></div><p id="breakStatus">Clear the bricks!</p>';
+const c=$('#breakCanvas'),x=c.getContext('2d');let px=165,ball,bricks,run=true,raf;
+function reset(){cancelAnimationFrame(raf);px=165;ball={x:210,y:240,dx:2.5,dy:-2.5};bricks=[];for(let r=0;r<4;r++)for(let q=0;q<7;q++)bricks.push({x:8+q*58,y:25+r*23,on:true});run=true;$('#breakStatus').textContent='Clear the bricks!';tick()}
+function tick(){x.fillStyle='#10131d';x.fillRect(0,0,420,300);bricks.filter(b=>b.on).forEach((b,i)=>{x.fillStyle=['#c5ff55','#a89bff','#62d5c4','#ff9c70'][Math.floor((b.y-25)/23)];x.fillRect(b.x,b.y,50,14)});x.fillStyle='#f4f5fa';x.fillRect(px,278,90,8);x.beginPath();x.arc(ball.x,ball.y,6,0,7);x.fill();if(run){ball.x+=ball.dx;ball.y+=ball.dy;if(ball.x<6||ball.x>414)ball.dx*=-1;if(ball.y<6)ball.dy=Math.abs(ball.dy);if(ball.y>270&&ball.x>px-5&&ball.x<px+95)ball.dy=-Math.abs(ball.dy);for(const b of bricks)if(b.on&&ball.x>b.x&&ball.x<b.x+50&&ball.y>b.y&&ball.y<b.y+14){b.on=false;ball.dy*=-1;break}if(ball.y>300){run=false;$('#breakStatus').textContent='Ball lost! Restart to play again.'}if(!bricks.some(b=>b.on)){run=false;$('#breakStatus').textContent='You cleared every brick!'}if(run)raf=requestAnimationFrame(tick)}}
+function setX(e){let r=c.getBoundingClientRect();px=Math.max(0,Math.min(330,(e.clientX-r.left)/r.width*420-45))}
+c.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')setX(e)});document.addEventListener('keydown',e=>{if(!$('#modal').classList.contains('open')||$('#gameTitle').textContent!=='Breakout')return;if(e.key==='ArrowLeft')px=Math.max(0,px-18);if(e.key==='ArrowRight')px=Math.min(330,px+18)});$('#breakReset').onclick=reset;reset();
+}
+function reactionGame(){
+$('#game').innerHTML='<p>Tap the panel to start. When it turns green, tap as quickly as you can.</p><div id="reactionStage" class="reactionstage">Tap to start</div><h3 id="reactionResult"></h3>';
+let state='idle',start=0,timer;const stage=$('#reactionStage'),result=$('#reactionResult');
+stage.onclick=()=>{if(state==='idle'||state==='done'){state='wait';stage.style.background='#a74355';stage.textContent='Wait for green…';result.textContent='';timer=setTimeout(()=>{state='go';start=performance.now();stage.style.background='#4eaa65';stage.textContent='TAP NOW!'},1200+Math.random()*2500)}else if(state==='wait'){clearTimeout(timer);state='done';stage.style.background='#3c4358';stage.textContent='Too soon! Tap to retry';result.textContent='False start'}else if(state==='go'){let ms=Math.round(performance.now()-start);state='done';stage.style.background='#3c4358';stage.textContent='Tap to try again';result.textContent=ms+' ms — '+(ms<220?'Lightning fast!':ms<300?'Great reaction!':'Keep practising!')}};
+}
+drawTabs();drawGames();
 </script>
-</body></html>
+</body>
+</html>
