@@ -81,6 +81,36 @@ canvas{display:block;width:min(100%,440px);height:auto;margin:14px auto;backgrou
 @media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.art{height:95px}.cardbody{padding:11px}.card h4{font-size:14px}.card p{font-size:11px;min-height:55px}.topnote{display:none}.hero{padding:40px 0 32px}}
 @media(max-width:390px){.grid{grid-template-columns:1fr}.art{height:110px}.card p{min-height:0}.hero h1{letter-spacing:-2px}}
 .creator-credit{color:var(--muted)!important;font-size:12px;letter-spacing:.02em}.creator-credit b{display:inline-block;color:#10131d;background:linear-gradient(100deg,#c5ff55,#a89bff);padding:6px 10px;border-radius:999px;font-weight:900;box-shadow:0 0 22px #c5ff5540}.orientation-chooser{position:fixed;inset:0;z-index:100;background:#070a13f2;display:none;align-items:center;justify-content:center;padding:20px}.orientation-chooser.show{display:flex}.orientation-card{width:min(430px,100%);padding:28px 22px;border:1px solid #a89bff66;border-radius:22px;background:linear-gradient(145deg,#1b2030,#111521);text-align:center;box-shadow:0 25px 90px #0009}.orientation-star{font-size:38px;color:#c5ff55}.orientation-card h2{font-size:27px;margin:8px 0}.orientation-card p:not(.eyebrow){color:var(--muted);font-size:13px;line-height:1.6}.orientation-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0 14px}.orientation-choice{border:1px solid #a89bff66;border-radius:14px;background:#242a3c;color:var(--text);padding:18px 10px;font-size:28px;cursor:pointer}.orientation-choice span{display:block;font-size:13px;font-weight:800;margin-top:8px}.orientation-choice:focus-visible,.orientation-choice:hover{outline:2px solid #c5ff55;border-color:#c5ff55}.orientation-card small{color:var(--muted);font-size:11px}@media(max-width:760px){.modalbox{max-height:98vh}.game{padding:10px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Premium transparent glass theme with subtle water-droplet highlights */
+:root{--bg:#08111b;--panel:rgba(14,29,44,.62);--panel2:rgba(28,47,64,.82);--text:#f7fbff;--muted:#d0deeb;--accent:#c9ff62;--purple:#9ce7ff;--line:rgba(216,241,255,.38)}
+body{background:radial-gradient(ellipse at 16% 8%,#4aa7c43d 0,transparent 34%),radial-gradient(ellipse at 86% 22%,#6c62b83b 0,transparent 36%),linear-gradient(145deg,#07111b,#101d2b 52%,#07111b);color:#f7fbff}
+header{background:rgba(8,19,30,.64);border-color:#d8f1ff45;box-shadow:0 8px 28px #0002}
+.hero{border-color:#d8f1ff40}.hero h1,.library h2,.shelf h3,.card h4{color:#fff}.hero p:not(.eyebrow),.sub,.card p,.notice{color:#e0ebf5}
+.search{background:rgba(17,35,51,.62);border-color:#d8f1ff65;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 #ffffff28,0 8px 24px #0002;color:#fff}
+.tabs{gap:10px}.tab{position:relative;isolation:isolate;overflow:hidden;background:rgba(21,40,57,.58);border:1px solid #d8f1ff70;color:#f4faff;border-radius:14px;padding:12px 16px;box-shadow:inset 0 1px 0 #ffffff38,0 6px 20px #0003}
+.tab:after,.card:after,.orientation-card:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:radial-gradient(circle at 13% 12%,#ffffff58 0 1px,transparent 4px),radial-gradient(circle at 83% 25%,#ffffff42 0 1.5px,transparent 5px),radial-gradient(circle at 92% 78%,#ffffff32 0 1px,transparent 4px);opacity:.75}
+.tab.active{background:linear-gradient(135deg,#d9ff83,#9ce95a);color:#102012;border-color:#f1ffd4;box-shadow:0 6px 24px #b7ff5b35,inset 0 1px 0 #ffffffb0}
+.card{position:relative;background:rgba(14,29,44,.62);border:1px solid #d8f1ff65;border-radius:18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 #ffffff35,0 14px 34px #0004}
+.card:hover{border-color:#9ce7ff;box-shadow:inset 0 1px 0 #ffffff45,0 18px 40px #0005}
+.cardbody{position:relative;z-index:1;background:linear-gradient(180deg,rgba(15,31,46,.72),rgba(9,22,35,.88))}
+.art{background:radial-gradient(ellipse at 30% 20%,#9ce7ff2b,transparent 55%),linear-gradient(145deg,#172b3d,#253049)}
+.tag{color:#d9ff83}.fav{width:38px;height:38px;border:1px solid #d8f1ff60;border-radius:12px;background:rgba(20,39,55,.8);color:#fff}.fav.on{background:#d9ff83;color:#102012;border-color:#f1ffd4}
+.play,.primary,.game button.mainbtn{background:linear-gradient(135deg,#d9ff83,#9ce95a);color:#102012;border:1px solid #f1ffd4;box-shadow:inset 0 1px 0 #ffffffa6,0 6px 22px #a8ff4b28}
+.play:hover,.primary:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.play.external{background:rgba(28,47,64,.8);color:#fff;border:1px solid #d8f1ff70}
+.notice{position:relative;background:rgba(14,29,44,.62);border:1px solid #d8f1ff60;border-radius:17px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 #ffffff30,0 10px 30px #0003}
+footer{border-color:#d8f1ff40;background:rgba(9,20,31,.35)}footer strong{color:#fff}footer .credit{color:#d9ff83}
+.modal{background:rgba(3,9,17,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.modalbox{background:rgba(12,25,39,.96);border-color:#d8f1ff70;box-shadow:0 30px 100px #0009}.modalhead{background:rgba(18,35,51,.94);border-color:#d8f1ff40}.close{background:rgba(28,47,64,.88);border-color:#d8f1ff65;color:#fff}
+.creator-credit b{color:#08111b;background:linear-gradient(100deg,#c9ff62,#9ce7ff);box-shadow:0 0 22px #c9ff6240}
+.orientation-chooser{background:rgba(3,10,18,.72);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.orientation-card{position:relative;isolation:isolate;overflow:hidden;width:min(500px,100%);padding:clamp(24px,6vw,36px);border:1px solid #d8f1ff85;border-radius:26px;background:linear-gradient(145deg,rgba(29,54,73,.84),rgba(9,22,36,.8));backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);box-shadow:inset 0 1px 0 #ffffff60,0 25px 90px #0009}
+.orientation-card>*{position:relative;z-index:1}.orientation-card h2{font-size:clamp(28px,7vw,36px);letter-spacing:-.04em;color:#fff}.orientation-card p:not(.eyebrow){color:#e0edf7;font-size:14px;line-height:1.65}
+.orientation-actions{gap:14px;margin:26px 0 18px}.orientation-choice{position:relative;isolation:isolate;overflow:hidden;min-height:116px;border:1px solid #d8f1ff95;border-radius:20px;background:linear-gradient(145deg,rgba(100,145,174,.42),rgba(18,38,55,.76));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:#fff;padding:16px 10px;font-size:34px;font-weight:850;box-shadow:inset 0 1px 0 #ffffff65,0 10px 25px #0003;transition:transform .18s,background .18s,border-color .18s}
+.orientation-choice span{font-size:15px;letter-spacing:.02em;font-weight:850}.orientation-choice:hover,.orientation-choice:focus-visible{transform:translateY(-2px);background:linear-gradient(135deg,#d9ff83,#9ce95a);color:#102012;border-color:#f1ffd4;outline:3px solid #9ce7ff;outline-offset:3px;box-shadow:0 10px 30px #b7ff5b35,inset 0 1px 0 #ffffffb0}.orientation-card small{color:#d0deeb;font-size:12px}
+@media(max-width:480px){.orientation-card{padding:25px 18px}.orientation-actions{gap:10px}.orientation-choice{min-height:104px;padding:14px 6px;font-size:32px}.orientation-choice span{font-size:14px}.tab{padding:11px 13px}}
+
 </style>
 </head>
 <body>
@@ -106,7 +136,7 @@ canvas{display:block;width:min(100%,440px);height:auto;margin:14px auto;backgrou
 </section>
 <section class="notice"><strong>Licensing and safety:</strong> Original mini-games are included in this page. Community links open external websites and are not endorsements. Some sites may require original game files. This page does not redistribute third-party game files. Verify each game's licensing before reusing code or assets.</section>
 </main>
-<footer><strong>ARCADE ORBIT</strong><span class="creator-credit">Created by <b>Nayum Ahmed Mirdhe</b> ✦</span><span>Browser gaming hub</span></footer>
+<footer><strong>ARCADE ORBIT</strong><span class="creator-credit">Created by <b>Nayum Ahmed</b> ✦</span><span>Browser gaming hub</span></footer>
 
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Game player">
 <div class="modalbox">
