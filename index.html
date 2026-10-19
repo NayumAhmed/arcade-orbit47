@@ -80,7 +80,7 @@ canvas{display:block;width:min(100%,440px);height:auto;margin:14px auto;backgrou
 .reactionstage{min-height:200px;display:grid;place-items:center;border-radius:15px;background:#3c4358;font-size:24px;font-weight:850;cursor:pointer;padding:20px;margin:18px 0}
 @media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.art{height:95px}.cardbody{padding:11px}.card h4{font-size:14px}.card p{font-size:11px;min-height:55px}.topnote{display:none}.hero{padding:40px 0 32px}}
 @media(max-width:390px){.grid{grid-template-columns:1fr}.art{height:110px}.card p{min-height:0}.hero h1{letter-spacing:-2px}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.creator-credit{color:var(--muted)!important;font-size:12px;letter-spacing:.02em}.creator-credit b{display:inline-block;color:#10131d;background:linear-gradient(100deg,#c5ff55,#a89bff);padding:6px 10px;border-radius:999px;font-weight:900;box-shadow:0 0 22px #c5ff5540}.orientation-chooser{position:fixed;inset:0;z-index:100;background:#070a13f2;display:none;align-items:center;justify-content:center;padding:20px}.orientation-chooser.show{display:flex}.orientation-card{width:min(430px,100%);padding:28px 22px;border:1px solid #a89bff66;border-radius:22px;background:linear-gradient(145deg,#1b2030,#111521);text-align:center;box-shadow:0 25px 90px #0009}.orientation-star{font-size:38px;color:#c5ff55}.orientation-card h2{font-size:27px;margin:8px 0}.orientation-card p:not(.eyebrow){color:var(--muted);font-size:13px;line-height:1.6}.orientation-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0 14px}.orientation-choice{border:1px solid #a89bff66;border-radius:14px;background:#242a3c;color:var(--text);padding:18px 10px;font-size:28px;cursor:pointer}.orientation-choice span{display:block;font-size:13px;font-weight:800;margin-top:8px}.orientation-choice:focus-visible,.orientation-choice:hover{outline:2px solid #c5ff55;border-color:#c5ff55}.orientation-card small{color:var(--muted);font-size:11px}@media(max-width:760px){.modalbox{max-height:98vh}.game{padding:10px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -106,13 +106,16 @@ canvas{display:block;width:min(100%,440px);height:auto;margin:14px auto;backgrou
 </section>
 <section class="notice"><strong>Licensing and safety:</strong> Original mini-games are included in this page. Community links open external websites and are not endorsements. Some sites may require original game files. This page does not redistribute third-party game files. Verify each game's licensing before reusing code or assets.</section>
 </main>
-<footer><strong>ARCADE ORBIT</strong><span>Browser gaming hub</span></footer>
+<footer><strong>ARCADE ORBIT</strong><span class="creator-credit">Created by <b>Nayum Ahmed Mirdhe</b> ✦</span><span>Browser gaming hub</span></footer>
 
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Game player">
 <div class="modalbox">
 <div class="modalhead"><h3 id="gameTitle">Now playing</h3><button class="close" id="close">✕ Close</button></div>
 <div id="game" class="game"></div>
 </div>
+</div>
+<div id="orientationChooser" class="orientation-chooser" role="dialog" aria-modal="true" aria-labelledby="orientationTitle">
+  <div class="orientation-card"><div class="orientation-star">✦</div><p class="eyebrow">ARCADE ORBIT</p><h2 id="orientationTitle">Choose your screen</h2><p>Pick how you want to browse. Your game will switch to landscape when you press Play.</p><div class="orientation-actions"><button id="choosePortrait" class="orientation-choice">▯ <span>Portrait</span></button><button id="chooseLandscape" class="orientation-choice">▱ <span>Landscape</span></button></div><small>You can change your choice before opening a game.</small></div>
 </div>
 <script>
 const games=[
@@ -301,8 +304,13 @@ $('#grid').querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>launch(b.dat
 $('#search').addEventListener('input',e=>{query=e.target.value.toLowerCase().trim();drawGames()});
 $('#close').onclick=closeGame;$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closeGame()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGame()});
+function setAppOrientation(mode){
+  try{if(window.ArcadeOrbit&&window.ArcadeOrbit.setOrientation)window.ArcadeOrbit.setOrientation(mode);}catch(e){}
+  try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock(mode).catch(()=>{});}catch(e){}
+}
 function launch(id){
 const g=games.find(x=>x.id===id);if(!g)return;
+setAppOrientation('landscape');
 if(g.url){window.open(g.url,'_blank','noopener,noreferrer');return}
 recent=[id,...recent.filter(x=>x!==id)].slice(0,12);save('ao-recent',recent);
 $('#gameTitle').textContent=g.title;$('#modal').classList.add('open');document.body.style.overflow='hidden';
@@ -313,7 +321,7 @@ if(id==='2048')game2048();
 if(id==='breakout')breakoutGame();
 if(id==='reaction')reactionGame();
 }
-function closeGame(){ $('#modal').classList.remove('open');$('#game').innerHTML='';document.body.style.overflow=''; }
+function closeGame(){ $('#modal').classList.remove('open');$('#game').innerHTML='';document.body.style.overflow='';setAppOrientation('portrait'); }
 function snakeGame(){
 $('#game').innerHTML=`<p>Use arrow keys or the direction buttons. On mobile, swipe on the board.</p><h3>Score: <span id="score">0</span></h3><canvas id="snakeCanvas" width="360" height="360"></canvas><div class="controls"><button class="mainbtn" id="restart">Start / Restart</button></div><div class="pad"><span></span><button data-dir="0,-1">▲</button><span></span><button data-dir="-1,0">◀</button><button data-dir="0,1">▼</button><button data-dir="1,0">▶</button></div><p id="status">Press Start to play.</p>`;
 const c=$('#snakeCanvas'),x=c.getContext('2d'),N=18,S=20;let body,food,dir,timer,score=0,alive=false,sx=0,sy=0;
@@ -363,6 +371,17 @@ let state='idle',start=0,timer;const stage=$('#reactionStage'),result=$('#reacti
 stage.onclick=()=>{if(state==='idle'||state==='done'){state='wait';stage.style.background='#a74355';stage.textContent='Wait for green…';result.textContent='';timer=setTimeout(()=>{state='go';start=performance.now();stage.style.background='#4eaa65';stage.textContent='TAP NOW!'},1200+Math.random()*2500)}else if(state==='wait'){clearTimeout(timer);state='done';stage.style.background='#3c4358';stage.textContent='Too soon! Tap to retry';result.textContent='False start'}else if(state==='go'){let ms=Math.round(performance.now()-start);state='done';stage.style.background='#3c4358';stage.textContent='Tap to try again';result.textContent=ms+' ms — '+(ms<220?'Lightning fast!':ms<300?'Great reaction!':'Keep practising!')}};
 }
 drawTabs();drawGames();
+const orientationChooser=$('#orientationChooser');
+function chooseBrowsingOrientation(mode){
+  setAppOrientation(mode);
+  orientationChooser.classList.remove('show');
+  try{sessionStorage.setItem('ao-orientation-chosen','1')}catch(e){}
+}
+$('#choosePortrait').addEventListener('click',()=>chooseBrowsingOrientation('portrait'));
+$('#chooseLandscape').addEventListener('click',()=>chooseBrowsingOrientation('landscape'));
+const isMobileDevice=matchMedia('(pointer: coarse)').matches||/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+let alreadyChosen=false;try{alreadyChosen=sessionStorage.getItem('ao-orientation-chosen')==='1'}catch(e){}
+if(isMobileDevice&&!alreadyChosen)orientationChooser.classList.add('show');
 </script>
 </body>
 </html>
