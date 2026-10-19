@@ -1,4 +1,4 @@
-name: Build Fire TV APK
+name: Build Arcade Orbit Android APKs
 
 on:
   push:
@@ -29,22 +29,32 @@ jobs:
         with:
           gradle-version: "8.7"
 
-      - name: Build debug APK
+      - name: Build Android APK
         working-directory: firetv
         run: gradle assembleDebug --no-daemon
 
-      - name: Prepare release
+      - name: Verify APK archive and DEX
+        run: |
+          APK="firetv/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          unzip -l "$APK" | grep -E 'classes([0-9]+)?\.dex'
+          SIZE=$(stat -c%s "$APK")
+          echo "APK size: $SIZE bytes"
+          test "$SIZE" -gt 10000
+
+      - name: Prepare release assets
+        run: |
+          cp firetv/app/build/outputs/apk/debug/app-debug.apk ArcadeOrbit.apk
+          cp firetv/app/build/outputs/apk/debug/app-debug.apk ArcadeOrbit-Mobile.apk
+
+      - name: Publish verified APKs
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if ! gh release view firetv-latest --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create firetv-latest --repo "${GITHUB_REPOSITORY}" \\
-              --title "Arcade Orbit for Fire TV" \\
-              --notes "Install the Arcade Orbit WebView app on Amazon Fire TV / Firestick. This build loads the live Arcade Orbit website."
+            gh release create firetv-latest --repo "${GITHUB_REPOSITORY}" \
+              --title "Arcade Orbit Android App" \
+              --notes "Arcade Orbit WebView app for Android phones and Fire TV. Requires internet access."
           fi
-
-      - name: Publish APK
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release upload firetv-latest firetv/app/build/outputs/apk/debug/app-debug.apk#ArcadeOrbit.apk --repo "${GITHUB_REPOSITORY}" --clobber
+          gh release upload firetv-latest ArcadeOrbit.apk ArcadeOrbit-Mobile.apk --repo "${GITHUB_REPOSITORY}" --clobber
