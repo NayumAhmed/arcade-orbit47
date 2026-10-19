@@ -142,9 +142,13 @@ const games=[
 {id:'quake2',title:'Quake II',cat:'FPS',icon:'💥',desc:'Community-hosted classic shooter link.',url:'https://q2.pieter.com'},
 {id:'hedge',title:'Hedgewars / WebWars',cat:'Strategy',icon:'🐹',desc:'Turn-based artillery strategy game link.',url:'https://webwars.link'},
 {id:'wasm',title:'WASM Arcade',cat:'Resources',icon:'🌐',desc:'Discover more browser game projects.',url:'https://wasmarcade.com'},
-{id:'html5',title:'HTML5 Game Projects',cat:'Resources',icon:'🧑‍💻',desc:'Explore open-source game repositories and check each license.',url:'https://github.com/topics/html5-games'}
+{id:'html5',title:'HTML5 Game Projects',cat:'Resources',icon:'🧑‍💻',desc:'Explore open-source game repositories and check each license.',url:'https://github.com/topics/html5-games'},
+{id:'mario-browser',title:'Mario Browser Arcade',cat:'Platformer',icon:'🍄',desc:'Play a browser-based Mario-style platformer and explore fan-made versions. Independent site; not affiliated with Nintendo.',url:'https://mario.game/'},
+{id:'pacman-browser',title:'Pac-Man Browser Arcade',cat:'Arcade',icon:'🟡',desc:'Maze-chase arcade game with keyboard and mobile controls. Fan project; external site.',url:'https://pacman.love/game'},
+{id:'asteroids-browser',title:'Asteroids',cat:'Arcade',icon:'🚀',desc:'Pilot a ship, break apart asteroids, and survive in this HTML5 browser arcade game.',url:'https://www.asteroids.es/en/'},
+{id:'classic-arcade',title:'Classic Arcade Collection',cat:'Resources',icon:'🕹️',desc:'Open a browser arcade portal with games including Invaders, Pong, Pac-Man, and more. Availability may vary.',url:'https://whynotproductions.netlify.app/whynot-games/'}
 ];
-const colors={Arcade:'#292746',Board:'#273d42',Puzzle:'#38324e',Casual:'#453044',Action:'#4a293a',FPS:'#263849',Sports:'#24483e',RPG:'#46304a',Strategy:'#3b3c28',Resources:'#263849'};
+const colors={Arcade:'#292746',Board:'#273d42',Puzzle:'#38324e',Casual:'#453044',Action:'#4a293a',FPS:'#263849',Sports:'#24483e',RPG:'#46304a',Strategy:'#3b3c28',Platformer:'#3c4930',Resources:'#263849'};
 let category='All games',query='',favorites=load('ao-favs',[]),recent=load('ao-recent',[]);
 function load(k,f){try{return JSON.parse(localStorage.getItem(k)||'null')||f}catch(e){return f}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
