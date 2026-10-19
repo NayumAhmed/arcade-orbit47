@@ -1,6 +1,8 @@
 package com.nayum.arcadeorbit;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.webkit.JavascriptInterface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.content.pm.PackageManager;
@@ -35,6 +37,7 @@ public class MainActivity extends Activity {
         webView = new WebView(this);
         webView.setFocusable(true);
         webView.setFocusableInTouchMode(true);
+        webView.addJavascriptInterface(new OrientationBridge(), "ArcadeOrbit");
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -80,6 +83,21 @@ public class MainActivity extends Activity {
         errorView.setVisibility(View.GONE);
         setContentView(root);
         webView.loadUrl(HOME);
+    }
+
+    private final class OrientationBridge {
+        @JavascriptInterface
+        public void setOrientation(String mode) {
+            runOnUiThread(() -> {
+                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
+                    if ("landscape".equalsIgnoreCase(mode)) {
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                    } else {
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                    }
+                }
+            });
+        }
     }
 
     @Override
