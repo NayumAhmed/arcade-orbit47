@@ -474,7 +474,7 @@ public class MainActivity extends Activity {
         }
         FrameLayout.LayoutParams settingsParams = new FrameLayout.LayoutParams(-1, -2, Gravity.TOP | Gravity.RIGHT);
         playerRoot.addView(settingsBar, settingsParams);
-        playerView.setControllerVisibilityListener((visibility) -> {
+        playerView.setControllerVisibilityListener((PlayerView.ControllerVisibilityListener) (visibility) -> {
             settingsBar.setVisibility(visibility == View.VISIBLE ? View.VISIBLE : View.GONE);
         });
         setContentView(playerRoot);
