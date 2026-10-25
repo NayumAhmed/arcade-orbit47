@@ -424,6 +424,7 @@ public class MainActivity extends Activity {
         playerView.setUseController(true);
         playerView.setControllerAutoShow(true);
         playerView.setControllerHideOnTouch(true);
+        playerView.setControllerShowTimeoutMs(10000);
         playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         playerView.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
         playerView.setBackgroundColor(Color.BLACK);
@@ -434,6 +435,32 @@ public class MainActivity extends Activity {
         LinearLayout settingsBar = new LinearLayout(this);
         settingsBar.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         settingsBar.setPadding(dp(8), dp(6), dp(12), dp(6));
+        settingsBar.setBackgroundColor(0x66000000);
+
+        Button favorite = button(favoriteButtonText(channel), false);
+        favorite.setText(favorites.contains(channel.url) ? "♥ Saved" : "＋ My List");
+        favorite.setTextSize(12);
+        favorite.setMinHeight(dp(36));
+        favorite.setPadding(dp(8), 0, dp(8), 0);
+        favorite.setBackground(round(0xEE102D55, 10, 0xFF8ED8FF, 1));
+        favorite.setOnFocusChangeListener((v, focused) -> {
+            favorite.setBackground(round(focused ? 0xFF1C5480 : 0xEE102D55, 10,
+                    focused ? Color.WHITE : 0xFF8ED8FF, focused ? 2 : 1));
+            favorite.setTextColor(Color.WHITE);
+        });
+        favorite.setOnClickListener(v -> {
+            boolean adding = !favorites.contains(channel.url);
+            if (adding) favorites.add(channel.url); else favorites.remove(channel.url);
+            prefs.edit().putStringSet("favorites", new HashSet<>(favorites)).apply();
+            favorite.setText(adding ? "♥ Saved" : "＋ My List");
+            Toast.makeText(MainActivity.this,
+                    adding ? channel.name + " added to My List" : channel.name + " removed from My List",
+                    Toast.LENGTH_SHORT).show();
+        });
+        LinearLayout.LayoutParams fp = new LinearLayout.LayoutParams(-2, dp(36));
+        fp.rightMargin = dp(6);
+        settingsBar.addView(favorite, fp);
+
         Button audio = button("♫ Audio", false);
         audio.setOnClickListener(v -> showTrackSettings(C.TRACK_TYPE_AUDIO, "Audio language"));
         Button quality = button("⚙ Quality", false);
@@ -441,35 +468,15 @@ public class MainActivity extends Activity {
         Button subtitles = button("CC Subtitles", false);
         subtitles.setOnClickListener(v -> showTrackSettings(C.TRACK_TYPE_TEXT, "Subtitles"));
         for (Button b : new Button[]{audio, quality, subtitles}) {
-            LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-2, dp(42));
-            bp.leftMargin = dp(6); settingsBar.addView(b, bp);
+            LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-2, dp(36));
+            bp.leftMargin = dp(4);
+            settingsBar.addView(b, bp);
         }
         FrameLayout.LayoutParams settingsParams = new FrameLayout.LayoutParams(-1, -2, Gravity.TOP | Gravity.RIGHT);
         playerRoot.addView(settingsBar, settingsParams);
-
-        Button favorite = button(favoriteButtonText(channel), false);
-        favorite.setTextSize(16);
-        favorite.setMinHeight(dp(50));
-        favorite.setPadding(dp(18), 0, dp(18), 0);
-        favorite.setBackground(round(0xEE102D55, 14, 0xFF8ED8FF, 2));
-        favorite.setOnFocusChangeListener((v, focused) -> {
-            favorite.setBackground(round(focused ? 0xFF1C5480 : 0xEE102D55, 14,
-                    focused ? Color.WHITE : 0xFF8ED8FF, focused ? 3 : 2));
-            favorite.setTextColor(Color.WHITE);
+        playerView.setControllerVisibilityListener((visibility) -> {
+            settingsBar.setVisibility(visibility == View.VISIBLE ? View.VISIBLE : View.GONE);
         });
-        favorite.setOnClickListener(v -> {
-            boolean adding = !favorites.contains(channel.url);
-            if (adding) favorites.add(channel.url); else favorites.remove(channel.url);
-            prefs.edit().putStringSet("favorites", new HashSet<>(favorites)).apply();
-            favorite.setText(favoriteButtonText(channel));
-            Toast.makeText(MainActivity.this,
-                    adding ? channel.name + " added to My List" : channel.name + " removed from My List",
-                    Toast.LENGTH_SHORT).show();
-        });
-        FrameLayout.LayoutParams favoriteParams = new FrameLayout.LayoutParams(-2, dp(54),
-                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-        favoriteParams.bottomMargin = dp(28);
-        playerRoot.addView(favorite, favoriteParams);
         setContentView(playerRoot);
 
         player.addListener(new Player.Listener() {
