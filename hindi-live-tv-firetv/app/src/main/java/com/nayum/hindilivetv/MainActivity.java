@@ -135,7 +135,7 @@ public class MainActivity extends Activity {
         header.setBackground(glassPanel(18));
         root.addView(header);
 
-        TextView subtitle = text("Developed by Nayum Ahmed  ·  Indian live channels", 15, WHITE, true);
+        TextView subtitle = text("Developed by Nayum Ahmed  ·  Live TV for Fire TV", 15, WHITE, true);
         LinearLayout.LayoutParams subParams = new LinearLayout.LayoutParams(-1, -2);
         subParams.topMargin = dp(6);
         subParams.bottomMargin = dp(14);
@@ -358,7 +358,7 @@ public class MainActivity extends Activity {
             for (int j=i;j<Math.min(i+columns,visible.size());j++) {
                 Channel ch=visible.get(j);
                 LinearLayout tile=new LinearLayout(this); tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.CENTER);
-                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(glassPanel(16)); tile.setFocusable(true); tile.setClickable(true); tile.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(glassPanel(16)); tile.setFocusable(true); tile.setFocusableInTouchMode(false); tile.setClickable(true); tile.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
                 ImageView logo = new ImageView(this); logo.setScaleType(ImageView.ScaleType.FIT_CENTER); logo.setBackground(round(Color.rgb(34,37,54),12,0,0));
                 TextView fallback=text(iconFor(ch.category),28,WHITE,true); fallback.setGravity(Gravity.CENTER);
                 logo.setBackground(gradient(new int[]{0xAA8BD7E8, 0xAA5D91B2, 0xAA9DC7D5}, 12));
@@ -389,7 +389,7 @@ public class MainActivity extends Activity {
                 LinearLayout.LayoutParams saveP=new LinearLayout.LayoutParams(-1,dp(44)); saveP.topMargin=dp(8);
                 tile.addView(save,saveP);
                 tile.setOnClickListener(v->startChannel(ch));
-                tile.setOnFocusChangeListener((v,focused)->tile.setBackground(glassPanelFocused(focused)));
+                tile.setOnFocusChangeListener((v,focused)->{ tile.setBackground(glassPanelFocused(focused)); name.setTextColor(focused ? Color.WHITE : WHITE); });
                 LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,-2,1); tp.leftMargin=dp(4); tp.rightMargin=dp(4); row.addView(tile,tp);
             }
             for(int j=row.getChildCount();j<columns;j++) row.addView(new View(this),new LinearLayout.LayoutParams(0,dp(210),1));
@@ -525,7 +525,7 @@ public class MainActivity extends Activity {
                 if (now - lastBackAt < 2000L) finish();
                 else {
                     lastBackAt = now;
-                    Toast.makeText(this, "Press BACK again to exit Hindi Live TV", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Press BACK again to exit N Live TV", Toast.LENGTH_SHORT).show();
                 }
             }
             return true;
