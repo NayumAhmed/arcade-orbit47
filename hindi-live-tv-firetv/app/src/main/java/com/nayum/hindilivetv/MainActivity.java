@@ -118,6 +118,10 @@ public class MainActivity extends Activity {
         subParams.topMargin = dp(6);
         subParams.bottomMargin = dp(14);
         root.addView(subtitle, subParams);
+        TextView credit = text("Developed by Nayum Ahmed", 12, MUTED, true);
+        LinearLayout.LayoutParams creditParams = new LinearLayout.LayoutParams(-1, -2);
+        creditParams.topMargin = dp(3);
+        root.addView(credit, creditParams);
 
         search = new EditText(this);
         search.setSingleLine(true);
