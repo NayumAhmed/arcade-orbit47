@@ -112,10 +112,11 @@ public class MainActivity extends Activity {
         LinearLayout header = new LinearLayout(this);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setOrientation(LinearLayout.HORIZONTAL);
-        TextView mark = text("N", 27, WHITE, true);
-        mark.setGravity(Gravity.CENTER);
-        mark.setBackground(gradient(new int[]{0xAA68DDFD, 0xAA3677A8}, 14));
-        LinearLayout.LayoutParams markP = new LinearLayout.LayoutParams(dp(48), dp(44));
+        ImageView mark = new ImageView(this);
+        mark.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mark.setImageBitmap(loadBrandLogo());
+        mark.setContentDescription("Nayum Ahmed logo");
+        LinearLayout.LayoutParams markP = new LinearLayout.LayoutParams(dp(58), dp(58));
         markP.rightMargin = dp(12);
         header.addView(mark, markP);
         TextView logo = text("N LIVE TV", 27, WHITE, true);
@@ -564,6 +565,19 @@ public class MainActivity extends Activity {
         GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.TL_BR, colors);
         d.setCornerRadius(dp(radiusDp));
         return d;
+    }
+
+    private Bitmap loadBrandLogo() {
+        try (java.io.InputStream in = getResources().openRawResource(R.raw.nayum_logo);
+             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
+            byte[] buffer = new byte[2048];
+            int read;
+            while ((read = in.read(buffer)) != -1) out.write(buffer, 0, read);
+            byte[] image = android.util.Base64.decode(out.toString("UTF-8"), android.util.Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(image, 0, image.length);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private GradientDrawable glassPanel(int radiusDp) {
