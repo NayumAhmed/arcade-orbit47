@@ -1,4 +1,5 @@
 name: Build Hindi Live TV Fire TV APK
+# Rebuild after stream fallback and failed-channel auto-skip update.
 
 on:
   push:
