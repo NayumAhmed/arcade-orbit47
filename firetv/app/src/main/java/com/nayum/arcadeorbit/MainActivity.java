@@ -14,12 +14,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.graphics.Color;
 
 public class MainActivity extends Activity {
     private WebView webView;
     private TextView errorView;
     private static final String HOME = "https://nayumahmed.github.io/arcade-orbit47/";
+    private long backPressedAt = 0L;
+    private static final long EXIT_BACK_WINDOW_MS = 2000L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,9 +106,20 @@ public class MainActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (webView != null && webView.canGoBack()) webView.goBack();
-            else if (webView != null) webView.loadUrl(HOME);
-            else finish();
+            // Use Back for browser history first. At home, require a second
+            // Back press within two seconds to exit, like other TV apps.
+            if (webView != null && webView.canGoBack()) {
+                webView.goBack();
+                backPressedAt = 0L;
+            } else {
+                long now = android.os.SystemClock.elapsedRealtime();
+                if (now - backPressedAt < EXIT_BACK_WINDOW_MS) {
+                    finish();
+                } else {
+                    backPressedAt = now;
+                    Toast.makeText(this, "Press BACK again to exit Arcade Orbit", Toast.LENGTH_SHORT).show();
+                }
+            }
             return true;
         }
         return super.onKeyDown(keyCode, event);
