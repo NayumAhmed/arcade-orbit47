@@ -66,6 +66,7 @@ public class MainActivity extends Activity {
     private boolean showingFavorites = false;
     private final List<String> categories = new ArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService logoExecutor = Executors.newFixedThreadPool(3);
     private final Handler main = new Handler(Looper.getMainLooper());
     private LinearLayout root;
     private LinearLayout channelList;
@@ -232,7 +233,7 @@ public class MainActivity extends Activity {
             loaded.addAll(fallbackChannels());
             List<Channel> unique = limitAndDedupe(loaded);
             StringBuilder saved = new StringBuilder();
-            for (Channel ch : unique) saved.append("#EXTINF:-1,").append(ch.name.replace("\\n", " ")).append("\\n").append(ch.url).append("\\n");
+            for (Channel ch : unique) saved.append("#EXTINF:-1 tvg-logo=\\\"").append(ch.logo.replace("\\\"","")).append("\\\",").append(ch.name.replace("\\n", " ")).append("\\n").append(ch.url).append("\\n");
             prefs.edit().putString("channel_cache", saved.toString()).apply();
             final boolean networkOk = ok; final List<Channel> result = unique;
             main.post(() -> {
@@ -361,7 +362,7 @@ public class MainActivity extends Activity {
 
     private void loadChannelLogo(String address, ImageView target) {
         target.setTag(address);
-        executor.execute(() -> {
+        logoExecutor.execute(() -> {
             HttpURLConnection conn=null;
             try {
                 conn=(HttpURLConnection)new URL(address).openConnection();
@@ -525,6 +526,7 @@ public class MainActivity extends Activity {
     @Override protected void onDestroy() {
         if (player != null) { player.release(); player = null; }
         executor.shutdownNow();
+        logoExecutor.shutdownNow();
         main.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
