@@ -47,6 +47,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
+    private static final String ALL_CHANNELS_PLAYLIST = "https://iptv-org.github.io/iptv/index.m3u";
     private static final String INDIA_PLAYLIST = "https://iptv-org.github.io/iptv/countries/in.m3u";
     private static final String HINDI_PLAYLIST = "https://iptv-org.github.io/iptv/languages/hin.m3u";
     private static final int BG = Color.rgb(7, 17, 31);
@@ -194,12 +195,16 @@ public class MainActivity extends Activity {
             List<Channel> loaded = new ArrayList<>();
             String error = null;
             try {
-                loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST)));
+                // Global index provides the full public channel catalogue, with India/Hindi slices as backup.
+                loaded.addAll(parsePlaylist(fetch(ALL_CHANNELS_PLAYLIST)));
+                try { loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST))); } catch (Exception ignored) { }
                 try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); } catch (Exception ignored) { }
-                // Keep backup streams available even when a playlist loads successfully.
+                // Keep backup streams available even when playlists load successfully.
                 loaded.addAll(fallbackChannels());
             } catch (Exception e) {
                 error = e.getMessage() == null ? "Network unavailable" : e.getMessage();
+                try { loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST))); } catch (Exception ignored) { }
+                try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); } catch (Exception ignored) { }
             }
             if (loaded.isEmpty()) loaded.addAll(fallbackChannels());
             Set<String> seen = new HashSet<>();
@@ -224,8 +229,8 @@ public class MainActivity extends Activity {
 
     private String fetch(String address) throws Exception {
         HttpURLConnection connection = (HttpURLConnection) new URL(address).openConnection();
-        connection.setConnectTimeout(9000);
-        connection.setReadTimeout(12000);
+        connection.setConnectTimeout(12000);
+        connection.setReadTimeout(45000);
         connection.setRequestProperty("User-Agent", "HindiLiveTV/1.0 AndroidTV");
         try {
             int code = connection.getResponseCode();
@@ -249,7 +254,7 @@ public class MainActivity extends Activity {
                 int comma = line.lastIndexOf(',');
                 pendingName = comma >= 0 ? line.substring(comma + 1).trim() : "Live channel";
             } else if (pendingName != null && (line.startsWith("https://") || line.startsWith("http://"))) {
-                if (isRelevant(pendingName)) parsed.add(new Channel(pendingName, line, categoryFor(pendingName)));
+                if (!pendingName.trim().isEmpty()) parsed.add(new Channel(pendingName, line, categoryFor(pendingName)));
                 pendingName = null;
             }
         }
