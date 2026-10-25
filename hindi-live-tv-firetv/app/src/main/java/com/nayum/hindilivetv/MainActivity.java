@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.HorizontalScrollView;
@@ -25,10 +26,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.DefaultLoadControl;
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
+import androidx.media3.ui.TrackSelectionDialogBuilder;
 import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
@@ -78,6 +83,7 @@ public class MainActivity extends Activity {
     private boolean playerVisible = false;
     private long lastBackAt = 0L;
     private ExoPlayer player;
+    private DefaultTrackSelector trackSelector;
     private PlayerView playerView;
     private LinearLayout playerScreen;
     private int currentIndex = -1;
@@ -393,42 +399,53 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         if (player != null) { player.release(); player = null; }
 
-        // True edge-to-edge playback: the video occupies the entire TV display.
+        // Larger live buffers help absorb short Wi-Fi/network fluctuations.
+        DefaultLoadControl loadControl = new DefaultLoadControl.Builder()
+                .setBufferDurationsMs(15000, 50000, 1500, 5000)
+                .setPrioritizeTimeOverSizeThresholds(true)
+                .build();
+        trackSelector = new DefaultTrackSelector(this);
+        player = new ExoPlayer.Builder(this)
+                .setLoadControl(loadControl)
+                .setTrackSelector(trackSelector)
+                .build();
+
+        FrameLayout playerRoot = new FrameLayout(this);
+        playerRoot.setBackgroundColor(Color.BLACK);
         playerView = new PlayerView(this);
         playerView.setUseController(true);
         playerView.setControllerAutoShow(true);
         playerView.setControllerHideOnTouch(true);
-        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         playerView.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
         playerView.setBackgroundColor(Color.BLACK);
         playerView.setKeepContentOnPlayerReset(true);
-        setContentView(playerView);
-
-        player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
+        playerRoot.addView(playerView, new FrameLayout.LayoutParams(-1, -1));
+
+        LinearLayout settingsBar = new LinearLayout(this);
+        settingsBar.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        settingsBar.setPadding(dp(8), dp(6), dp(12), dp(6));
+        Button audio = button("♫ Audio", false);
+        audio.setOnClickListener(v -> showTrackSettings(C.TRACK_TYPE_AUDIO, "Audio language"));
+        Button quality = button("⚙ Quality", false);
+        quality.setOnClickListener(v -> showTrackSettings(C.TRACK_TYPE_VIDEO, "Video quality"));
+        Button subtitles = button("CC Subtitles", false);
+        subtitles.setOnClickListener(v -> showTrackSettings(C.TRACK_TYPE_TEXT, "Subtitles"));
+        for (Button b : new Button[]{audio, quality, subtitles}) {
+            LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-2, dp(42));
+            bp.leftMargin = dp(6); settingsBar.addView(b, bp);
+        }
+        FrameLayout.LayoutParams settingsParams = new FrameLayout.LayoutParams(-1, -2, Gravity.TOP | Gravity.RIGHT);
+        playerRoot.addView(settingsBar, settingsParams);
+        setContentView(playerRoot);
+
         player.addListener(new Player.Listener() {
             @Override public void onPlayerError(PlaybackException error) {
-                failedStreamUrls.add(channel.url);
-                int failedIndex = channels.indexOf(channel);
-                int candidateIndex = -1;
-                for (int step = 1; step <= channels.size(); step++) {
-                    int candidate = (Math.max(failedIndex, 0) + step) % channels.size();
-                    Channel next = channels.get(candidate);
-                    boolean categoryMatch = selectedCategory.equals("All Channels") || next.category.equals(selectedCategory);
-                    if (categoryMatch && !failedStreamUrls.contains(next.url)) { candidateIndex = candidate; break; }
-                }
-                if (candidateIndex >= 0) {
-                    final int nextIndex = candidateIndex;
-                    Toast.makeText(MainActivity.this, "Stream unavailable. Trying " + channels.get(nextIndex).name + "…", Toast.LENGTH_SHORT).show();
-                    main.postDelayed(() -> {
-                        if (playerVisible && currentIndex == failedIndex) {
-                            currentIndex = nextIndex;
-                            showPlayer(channels.get(nextIndex));
-                        }
-                    }, 900);
-                } else {
-                    Toast.makeText(MainActivity.this, "No more untried streams. Press Back to choose another channel or refresh.", Toast.LENGTH_LONG).show();
-                }
+                // Don't jump to an unrelated channel automatically; tell the viewer this stream failed.
+                Toast.makeText(MainActivity.this,
+                        "This stream stalled or is unavailable. Try another channel or check your connection.",
+                        Toast.LENGTH_LONG).show();
             }
         });
         player.setMediaItem(MediaItem.fromUri(channel.url));
@@ -436,6 +453,18 @@ public class MainActivity extends Activity {
         player.play();
         playerView.setFocusable(true);
         playerView.requestFocus();
+    }
+
+    private void showTrackSettings(int trackType, String title) {
+        if (trackSelector == null || player == null) return;
+        try {
+            new TrackSelectionDialogBuilder(this, title, trackSelector, trackType)
+                    .setShowDisableOption(trackType == C.TRACK_TYPE_TEXT)
+                    .build().show();
+        } catch (Exception e) {
+            Toast.makeText(this, "This channel does not expose selectable " +
+                    title.toLowerCase(Locale.ROOT) + " tracks.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void playRelative(int delta) {
