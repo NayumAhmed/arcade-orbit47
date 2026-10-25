@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
     private static final int MUTED = Color.rgb(190, 207, 224);
 
     private final List<Channel> channels = new ArrayList<>();
+    private final Set<String> failedStreamUrls = new HashSet<>();
     private final List<String> categories = new ArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -195,6 +196,8 @@ public class MainActivity extends Activity {
             try {
                 loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST)));
                 try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); } catch (Exception ignored) { }
+                // Keep backup streams available even when a playlist loads successfully.
+                loaded.addAll(fallbackChannels());
             } catch (Exception e) {
                 error = e.getMessage() == null ? "Network unavailable" : e.getMessage();
             }
@@ -211,6 +214,7 @@ public class MainActivity extends Activity {
             main.post(() -> {
                 channels.clear();
                 channels.addAll(result);
+                failedStreamUrls.clear();
                 renderChannels();
                 status.setText((message == null ? "Playlist refreshed" : "Offline fallback loaded")
                         + " · Public streams may be unavailable or region-restricted");
@@ -387,7 +391,27 @@ public class MainActivity extends Activity {
         playerView.setPlayer(player);
         player.addListener(new Player.Listener() {
             @Override public void onPlayerError(PlaybackException error) {
-                Toast.makeText(MainActivity.this, "This stream is unavailable. Try another channel.", Toast.LENGTH_LONG).show();
+                failedStreamUrls.add(channel.url);
+                int failedIndex = channels.indexOf(channel);
+                int candidateIndex = -1;
+                for (int step = 1; step <= channels.size(); step++) {
+                    int candidate = (Math.max(failedIndex, 0) + step) % channels.size();
+                    Channel next = channels.get(candidate);
+                    boolean categoryMatch = selectedCategory.equals("All Channels") || next.category.equals(selectedCategory);
+                    if (categoryMatch && !failedStreamUrls.contains(next.url)) { candidateIndex = candidate; break; }
+                }
+                if (candidateIndex >= 0) {
+                    final int nextIndex = candidateIndex;
+                    Toast.makeText(MainActivity.this, "Stream unavailable. Trying " + channels.get(nextIndex).name + "…", Toast.LENGTH_SHORT).show();
+                    main.postDelayed(() -> {
+                        if (playerVisible && currentIndex == failedIndex) {
+                            currentIndex = nextIndex;
+                            showPlayer(channels.get(nextIndex));
+                        }
+                    }, 900);
+                } else {
+                    Toast.makeText(MainActivity.this, "No more untried streams in this category. Press Back and choose another channel or refresh.", Toast.LENGTH_LONG).show();
+                }
             }
         });
         player.setMediaItem(MediaItem.fromUri(channel.url));
