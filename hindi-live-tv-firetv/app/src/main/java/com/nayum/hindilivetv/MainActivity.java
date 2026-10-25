@@ -2,6 +2,8 @@ package com.nayum.hindilivetv;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,14 +53,17 @@ public class MainActivity extends Activity {
     private static final String ALL_CHANNELS_PLAYLIST = "https://iptv-org.github.io/iptv/index.m3u";
     private static final String INDIA_PLAYLIST = "https://iptv-org.github.io/iptv/countries/in.m3u";
     private static final String HINDI_PLAYLIST = "https://iptv-org.github.io/iptv/languages/hin.m3u";
-    private static final int BG = Color.rgb(7, 17, 31);
-    private static final int PANEL = Color.rgb(17, 39, 61);
-    private static final int LIME = Color.rgb(185, 255, 92);
+    private static final int BG = Color.rgb(8, 10, 20);
+    private static final int PANEL = Color.rgb(24, 27, 43);
+    private static final int LIME = Color.rgb(255, 255, 255);
     private static final int WHITE = Color.WHITE;
-    private static final int MUTED = Color.rgb(190, 207, 224);
+    private static final int MUTED = Color.rgb(170, 177, 195);
 
     private final List<Channel> channels = new ArrayList<>();
     private final Set<String> failedStreamUrls = new HashSet<>();
+    private final Set<String> favorites = new HashSet<>();
+    private android.content.SharedPreferences prefs;
+    private boolean showingFavorites = false;
     private final List<String> categories = new ArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -83,7 +89,10 @@ public class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        prefs = getSharedPreferences("hindi_tv_prefs", MODE_PRIVATE);
+        favorites.addAll(prefs.getStringSet("favorites", new HashSet<>()));
         buildHome();
+        loadCachedChannels();
         loadPlaylists();
     }
 
@@ -142,14 +151,15 @@ public class MainActivity extends Activity {
         categoryScroll.addView(categoryRow);
         root.addView(categoryScroll);
         categories.clear();
-        Collections.addAll(categories, "All Channels", "Hindi News", "Entertainment", "Documentary", "Sports", "Kids", "Hindi Music", "Devotional", "Bhojpuri", "Other");
+        Collections.addAll(categories, "All Channels", "♥ My List", "Hindi News", "Entertainment", "Documentary", "Sports", "Kids", "Hindi Music", "Devotional", "Bhojpuri", "Other");
         for (String category : categories) {
             Button b = button(category, category.equals(selectedCategory));
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-2, dp(40));
             p.rightMargin = dp(8);
             categoryRow.addView(b, p);
             b.setOnClickListener(v -> {
-                selectedCategory = category;
+                showingFavorites = category.equals("♥ My List");
+                selectedCategory = showingFavorites ? "All Channels" : category;
                 for (int i = 0; i < categoryRow.getChildCount(); i++) {
                     View child = categoryRow.getChildAt(i);
                     if (child instanceof Button) {
@@ -189,44 +199,53 @@ public class MainActivity extends Activity {
         setContentView(root);
     }
 
+    private void loadCachedChannels() {
+        String saved = prefs.getString("channel_cache", "");
+        if (!saved.isEmpty()) {
+            List<Channel> cached = parsePlaylist(saved);
+            if (!cached.isEmpty()) {
+                channels.clear(); channels.addAll(limitAndDedupe(cached)); renderChannels();
+                status.setText("Saved guide ready · refreshing quietly");
+            }
+        }
+    }
+
+    private List<Channel> limitAndDedupe(List<Channel> input) {
+        Set<String> seen = new HashSet<>(); List<Channel> out = new ArrayList<>();
+        for (Channel ch : input) {
+            String key = ch.name.toLowerCase(Locale.ROOT).replaceAll("\\s+", " ").trim();
+            if (!ch.url.isEmpty() && seen.add(key)) out.add(ch);
+        }
+        out.sort(Comparator.comparing((Channel ch) -> ch.category).thenComparing(ch -> ch.name.toLowerCase(Locale.ROOT)));
+        return out.size() > 180 ? new ArrayList<>(out.subList(0, 180)) : out;
+    }
+
     private void loadPlaylists() {
-        status.setText("Loading India and Hindi channels…");
-        count.setText("LOADING…");
+        status.setText("Updating guide in background…");
         executor.execute(() -> {
             List<Channel> loaded = new ArrayList<>();
-            boolean playlistLoaded = false;
-            // Avoid the very large global index: it can overwhelm older TV devices.
-            try { loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST))); playlistLoaded = true; } catch (Exception ignored) { }
-            try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); playlistLoaded = true; } catch (Exception ignored) { }
-            // Add known public entries as a small backup list.
-            loaded.addAll(fallbackChannels());
-
-            Set<String> seen = new HashSet<>();
-            List<Channel> unique = new ArrayList<>();
-            for (Channel c : loaded) {
-                String key = c.name.toLowerCase(Locale.ROOT).replaceAll("\\s+", " ").trim();
-                if (!c.url.isEmpty() && seen.add(key)) unique.add(c);
+            boolean ok = false;
+            try { loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST))); ok = !loaded.isEmpty(); } catch (Exception ignored) { }
+            if (loaded.isEmpty()) {
+                try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); ok = !loaded.isEmpty(); } catch (Exception ignored) { }
             }
-            unique.sort(Comparator.comparing((Channel c) -> c.category).thenComparing(c -> c.name.toLowerCase(Locale.ROOT)));
-            // Bound UI creation to keep memory and startup time predictable on Fire TV.
-            if (unique.size() > 180) unique = new ArrayList<>(unique.subList(0, 180));
-            final List<Channel> result = unique;
-            final boolean loadedFromNetwork = playlistLoaded;
+            loaded.addAll(fallbackChannels());
+            List<Channel> unique = limitAndDedupe(loaded);
+            StringBuilder saved = new StringBuilder();
+            for (Channel ch : unique) saved.append("#EXTINF:-1,").append(ch.name.replace("\\n", " ")).append("\\n").append(ch.url).append("\\n");
+            prefs.edit().putString("channel_cache", saved.toString()).apply();
+            final boolean networkOk = ok; final List<Channel> result = unique;
             main.post(() -> {
-                channels.clear();
-                channels.addAll(result);
-                failedStreamUrls.clear();
-                renderChannels();
-                status.setText((loadedFromNetwork ? "Channel list ready" : "Showing backup channels; check internet and refresh")
-                        + " · Some public streams may be unavailable or region-restricted");
+                channels.clear(); channels.addAll(result); failedStreamUrls.clear(); renderChannels();
+                status.setText(networkOk ? "Guide ready · " + result.size() + " channels" : "Using backup guide · check connection");
             });
         });
     }
 
     private String fetch(String address) throws Exception {
         HttpURLConnection connection = (HttpURLConnection) new URL(address).openConnection();
-        connection.setConnectTimeout(8000);
-        connection.setReadTimeout(12000);
+        connection.setConnectTimeout(4000);
+        connection.setReadTimeout(6500);
         connection.setRequestProperty("User-Agent", "HindiLiveTV/1.0 AndroidTV");
         try {
             int code = connection.getResponseCode();
@@ -243,15 +262,17 @@ public class MainActivity extends Activity {
     private List<Channel> parsePlaylist(String playlist) {
         List<Channel> parsed = new ArrayList<>();
         String[] lines = playlist.split("\\r?\\n");
-        String pendingName = null;
+        String pendingName = null, pendingLogo = "";
         for (String raw : lines) {
             String line = raw.trim();
             if (line.startsWith("#EXTINF")) {
                 int comma = line.lastIndexOf(',');
                 pendingName = comma >= 0 ? line.substring(comma + 1).trim() : "Live channel";
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("tvg-logo=\\\"([^\\\"]*)\\\"").matcher(line);
+                pendingLogo = m.find() ? m.group(1) : "";
             } else if (pendingName != null && (line.startsWith("https://") || line.startsWith("http://"))) {
-                if (!pendingName.trim().isEmpty()) parsed.add(new Channel(pendingName, line, categoryFor(pendingName)));
-                pendingName = null;
+                if (!pendingName.trim().isEmpty()) parsed.add(new Channel(pendingName, line, categoryFor(pendingName), pendingLogo));
+                pendingName = null; pendingLogo = "";
             }
         }
         return parsed;
@@ -295,63 +316,62 @@ public class MainActivity extends Activity {
         if (channelList == null || count == null) return;
         channelList.removeAllViews();
         List<Channel> visible = new ArrayList<>();
-        for (Channel c : channels) {
-            boolean categoryMatch = selectedCategory.equals("All Channels") || c.category.equals(selectedCategory);
-            boolean textMatch = searchQuery.isEmpty() || (c.name + " " + c.category).toLowerCase(Locale.ROOT).contains(searchQuery);
-            if (categoryMatch && textMatch) visible.add(c);
+        for (Channel ch : channels) {
+            boolean favOk = !showingFavorites || favorites.contains(ch.url);
+            boolean categoryOk = showingFavorites || selectedCategory.equals("All Channels") || ch.category.equals(selectedCategory);
+            boolean searchOk = searchQuery.isEmpty() || (ch.name + " " + ch.category).toLowerCase(Locale.ROOT).contains(searchQuery);
+            if (favOk && categoryOk && searchOk) visible.add(ch);
         }
         count.setText(visible.size() + " CHANNELS");
         if (visible.isEmpty()) {
-            TextView empty = text("No matching channels. Change category, search, or refresh.", 17, MUTED, false);
-            empty.setPadding(dp(16), dp(20), dp(16), dp(20));
-            channelList.addView(empty);
-            return;
+            TextView empty = text(showingFavorites ? "Your list is empty. Tap + on any channel to save it here." : "No channels found. Try another category or refresh.", 17, MUTED, false);
+            empty.setPadding(dp(16), dp(24), dp(16), dp(24)); channelList.addView(empty); return;
         }
         int columns = 4;
-        for (int i = 0; i < visible.size(); i += columns) {
+        for (int i=0;i<visible.size();i+=columns) {
             LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams rowP = new LinearLayout.LayoutParams(-1, -2);
-            rowP.bottomMargin = dp(10);
-            channelList.addView(row, rowP);
-            for (int j = i; j < Math.min(i + columns, visible.size()); j++) {
-                Channel channel = visible.get(j);
-                LinearLayout tile = new LinearLayout(this);
-                tile.setOrientation(LinearLayout.VERTICAL);
-                tile.setGravity(Gravity.CENTER);
-                tile.setPadding(dp(10), dp(12), dp(10), dp(12));
-                tile.setBackground(round(PANEL, 14, 0xFF40576D, 1));
-                tile.setFocusable(true);
-                tile.setFocusableInTouchMode(false);
-                tile.setClickable(true);
-                tile.setContentDescription("Play " + channel.name);
-                TextView icon = text(iconFor(channel.category), 28, LIME, true);
-                icon.setGravity(Gravity.CENTER);
-                tile.addView(icon, new LinearLayout.LayoutParams(-1, dp(38)));
-                TextView name = text(channel.name, 15, WHITE, true);
-                name.setGravity(Gravity.CENTER);
-                name.setMaxLines(2);
-                LinearLayout.LayoutParams nameP = new LinearLayout.LayoutParams(-1, dp(42));
-                nameP.topMargin = dp(5);
-                tile.addView(name, nameP);
-                TextView cat = text(channel.category.toUpperCase(Locale.ROOT), 10, LIME, true);
-                cat.setGravity(Gravity.CENTER);
-                LinearLayout.LayoutParams catP = new LinearLayout.LayoutParams(-1, dp(20));
-                tile.addView(cat, catP);
-                tile.setOnClickListener(v -> startChannel(channel));
-                tile.setOnFocusChangeListener((v, focused) -> {
-                    tile.setBackground(round(focused ? 0xFF234564 : PANEL, 14, focused ? LIME : 0xFF40576D, focused ? 3 : 1));
+            LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(-1,-2); rp.bottomMargin=dp(12); channelList.addView(row,rp);
+            for (int j=i;j<Math.min(i+columns,visible.size());j++) {
+                Channel ch=visible.get(j);
+                LinearLayout tile=new LinearLayout(this); tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.CENTER);
+                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(round(PANEL,16,0xFF3B4056,1)); tile.setFocusable(true); tile.setClickable(true);
+                ImageView logo = new ImageView(this); logo.setScaleType(ImageView.ScaleType.FIT_CENTER); logo.setBackground(round(Color.rgb(34,37,54),12,0,0));
+                TextView fallback=text(iconFor(ch.category),28,WHITE,true); fallback.setGravity(Gravity.CENTER);
+                logo.setImageDrawable(round(Color.rgb(34,37,54),12,0,0));
+                if (!ch.logo.isEmpty()) loadChannelLogo(ch.logo,logo);
+                tile.addView(logo,new LinearLayout.LayoutParams(-1,dp(72)));
+                TextView name=text(ch.name,14,WHITE,true); name.setGravity(Gravity.CENTER); name.setMaxLines(2);
+                LinearLayout.LayoutParams np=new LinearLayout.LayoutParams(-1,dp(40)); np.topMargin=dp(7); tile.addView(name,np);
+                LinearLayout footer=new LinearLayout(this); footer.setGravity(Gravity.CENTER_VERTICAL);
+                footer.addView(text(ch.category,10,MUTED,true),new LinearLayout.LayoutParams(0,dp(28),1));
+                Button save=button(favorites.contains(ch.url)?"♥":"＋",false); save.setTextSize(18); save.setMinWidth(dp(40));
+                save.setOnClickListener(v->{
+                    if(favorites.contains(ch.url)) favorites.remove(ch.url); else favorites.add(ch.url);
+                    prefs.edit().putStringSet("favorites",new HashSet<>(favorites)).apply();
+                    renderChannels();
                 });
-                LinearLayout.LayoutParams tileP = new LinearLayout.LayoutParams(0, dp(132), 1);
-                tileP.leftMargin = dp(4);
-                tileP.rightMargin = dp(4);
-                row.addView(tile, tileP);
+                footer.addView(save); tile.addView(footer);
+                tile.setOnClickListener(v->startChannel(ch));
+                tile.setOnFocusChangeListener((v,focused)->tile.setBackground(round(focused?Color.rgb(55,62,88):PANEL,16,focused?WHITE:0xFF3B4056,focused?2:1)));
+                LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,dp(158),1); tp.leftMargin=dp(4); tp.rightMargin=dp(4); row.addView(tile,tp);
             }
-            for (int j = row.getChildCount(); j < columns; j++) {
-                View spacer = new View(this);
-                row.addView(spacer, new LinearLayout.LayoutParams(0, dp(132), 1));
-            }
+            for(int j=row.getChildCount();j<columns;j++) row.addView(new View(this),new LinearLayout.LayoutParams(0,dp(158),1));
         }
+    }
+
+    private void loadChannelLogo(String address, ImageView target) {
+        target.setTag(address);
+        executor.execute(() -> {
+            HttpURLConnection conn=null;
+            try {
+                conn=(HttpURLConnection)new URL(address).openConnection();
+                conn.setConnectTimeout(2200); conn.setReadTimeout(2200);
+                try(java.io.InputStream in=conn.getInputStream()) {
+                    Bitmap bmp=BitmapFactory.decodeStream(in);
+                    if(bmp!=null) main.post(()->{ if(address.equals(target.getTag())) target.setImageBitmap(bmp); });
+                }
+            } catch(Exception ignored) { } finally { if(conn!=null) conn.disconnect(); }
+        });
     }
 
     private void startChannel(Channel channel) {
@@ -513,10 +533,13 @@ public class MainActivity extends Activity {
         final String name;
         final String url;
         final String category;
-        Channel(String name, String url, String category) {
+        final String logo;
+        Channel(String name, String url, String category) { this(name, url, category, ""); }
+        Channel(String name, String url, String category, String logo) {
             this.name = name == null || name.trim().isEmpty() ? "Live channel" : name.trim();
             this.url = url == null ? "" : url.trim();
             this.category = category == null ? "Other" : category;
+            this.logo = logo == null ? "" : logo;
         }
     }
 }
