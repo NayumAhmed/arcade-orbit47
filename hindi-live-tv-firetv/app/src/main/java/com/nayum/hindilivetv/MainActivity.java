@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -128,8 +129,9 @@ public class MainActivity extends Activity {
             }
         });
 
-        ScrollView categoryScroll = new ScrollView(this);
+        HorizontalScrollView categoryScroll = new HorizontalScrollView(this);
         categoryScroll.setHorizontalScrollBarEnabled(false);
+        categoryScroll.setVerticalScrollBarEnabled(false);
         categoryScroll.setVerticalScrollBarEnabled(false);
         categoryScroll.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(56)));
         LinearLayout categoryRow = new LinearLayout(this);
