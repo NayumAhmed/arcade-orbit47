@@ -58,8 +58,8 @@ public class MainActivity extends Activity {
     private static final String ALL_CHANNELS_PLAYLIST = "https://iptv-org.github.io/iptv/index.m3u";
     private static final String INDIA_PLAYLIST = "https://iptv-org.github.io/iptv/countries/in.m3u";
     private static final String HINDI_PLAYLIST = "https://iptv-org.github.io/iptv/languages/hin.m3u";
-    private static final int BG = Color.rgb(8, 10, 20);
-    private static final int PANEL = Color.rgb(24, 27, 43);
+    private static final int BG = Color.rgb(12, 18, 38);
+    private static final int PANEL = Color.rgb(31, 38, 66);
     private static final int LIME = Color.rgb(255, 255, 255);
     private static final int WHITE = Color.WHITE;
     private static final int MUTED = Color.rgb(170, 177, 195);
@@ -106,28 +106,26 @@ public class MainActivity extends Activity {
     private void buildHome() {
         root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(BG);
+        root.setBackground(gradient(new int[]{Color.rgb(12, 24, 60), Color.rgb(38, 24, 74), Color.rgb(14, 62, 85)}, 0));
         root.setPadding(dp(28), dp(18), dp(28), dp(16));
 
         LinearLayout header = new LinearLayout(this);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setOrientation(LinearLayout.HORIZONTAL);
-        TextView logo = text("◉  HINDI LIVE TV", 26, LIME, true);
+        TextView logo = text("◢ N ◣  N LIVE TV", 28, WHITE, true);
         header.addView(logo, new LinearLayout.LayoutParams(0, -2, 1));
         Button refresh = button("↻  Refresh", true);
         refresh.setOnClickListener(v -> loadPlaylists());
         header.addView(refresh);
+        header.setPadding(dp(14), dp(10), dp(12), dp(10));
+        header.setBackground(gradient(new int[]{Color.rgb(20, 75, 160), Color.rgb(105, 38, 150), Color.rgb(224, 66, 112)}, 18));
         root.addView(header);
 
-        TextView subtitle = text("Indian news · entertainment · music · devotional", 15, MUTED, false);
+        TextView subtitle = text("Developed by Nayum Ahmed  ·  Indian live channels", 15, WHITE, true);
         LinearLayout.LayoutParams subParams = new LinearLayout.LayoutParams(-1, -2);
         subParams.topMargin = dp(6);
         subParams.bottomMargin = dp(14);
         root.addView(subtitle, subParams);
-        TextView credit = text("Developed by Nayum Ahmed", 12, MUTED, true);
-        LinearLayout.LayoutParams creditParams = new LinearLayout.LayoutParams(-1, -2);
-        creditParams.topMargin = dp(3);
-        root.addView(credit, creditParams);
 
         search = new EditText(this);
         search.setSingleLine(true);
@@ -345,25 +343,37 @@ public class MainActivity extends Activity {
             for (int j=i;j<Math.min(i+columns,visible.size());j++) {
                 Channel ch=visible.get(j);
                 LinearLayout tile=new LinearLayout(this); tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.CENTER);
-                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(round(PANEL,16,0xFF3B4056,1)); tile.setFocusable(true); tile.setClickable(true);
+                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(gradient(new int[]{Color.rgb(34, 59, 115), Color.rgb(76, 42, 115), Color.rgb(31, 72, 91)}, 16)); tile.setFocusable(true); tile.setClickable(true);
                 ImageView logo = new ImageView(this); logo.setScaleType(ImageView.ScaleType.FIT_CENTER); logo.setBackground(round(Color.rgb(34,37,54),12,0,0));
                 TextView fallback=text(iconFor(ch.category),28,WHITE,true); fallback.setGravity(Gravity.CENTER);
+                logo.setBackground(gradient(new int[]{Color.rgb(22, 131, 180), Color.rgb(109, 53, 173), Color.rgb(226, 68, 119)}, 12));
                 logo.setImageDrawable(round(Color.rgb(34,37,54),12,0,0));
                 if (!ch.logo.isEmpty()) loadChannelLogo(ch.logo,logo);
                 tile.addView(logo,new LinearLayout.LayoutParams(-1,dp(72)));
                 TextView name=text(ch.name,14,WHITE,true); name.setGravity(Gravity.CENTER); name.setMaxLines(2);
                 LinearLayout.LayoutParams np=new LinearLayout.LayoutParams(-1,dp(40)); np.topMargin=dp(7); tile.addView(name,np);
                 LinearLayout footer=new LinearLayout(this); footer.setGravity(Gravity.CENTER_VERTICAL);
-                footer.addView(text(ch.category,10,MUTED,true),new LinearLayout.LayoutParams(0,dp(28),1));
-                Button save=button(favorites.contains(ch.url)?"♥":"＋",false); save.setTextSize(18); save.setMinWidth(dp(40));
+                footer.addView(text(ch.category,10,MUTED,true),new LinearLayout.LayoutParams(-1,dp(20)));
+                tile.addView(footer);
+                Button save=button(favorites.contains(ch.url)?"♥ Saved":"♡ Add to My List",false);
+                save.setTextSize(12); save.setAllCaps(false); save.setMinWidth(dp(112)); save.setFocusable(true); save.setClickable(true);
+                save.setContentDescription(favorites.contains(ch.url) ? "Remove "+ch.name+" from My List" : "Add "+ch.name+" to My List");
+                save.setBackground(gradient(favorites.contains(ch.url)
+                        ? new int[]{Color.rgb(18, 150, 120), Color.rgb(35, 175, 145)}
+                        : new int[]{Color.rgb(20, 119, 202), Color.rgb(126, 60, 190)}, 18));
                 save.setOnClickListener(v->{
-                    if(favorites.contains(ch.url)) favorites.remove(ch.url); else favorites.add(ch.url);
+                    boolean adding = !favorites.contains(ch.url);
+                    if(adding) favorites.add(ch.url); else favorites.remove(ch.url);
                     prefs.edit().putStringSet("favorites",new HashSet<>(favorites)).apply();
+                    Toast.makeText(MainActivity.this, adding ? ch.name+" added to My List" : ch.name+" removed from My List", Toast.LENGTH_SHORT).show();
                     renderChannels();
                 });
-                footer.addView(save); tile.addView(footer);
+                LinearLayout.LayoutParams saveP=new LinearLayout.LayoutParams(-1,dp(38)); saveP.topMargin=dp(4);
+                tile.addView(save,saveP);
                 tile.setOnClickListener(v->startChannel(ch));
-                tile.setOnFocusChangeListener((v,focused)->tile.setBackground(round(focused?Color.rgb(55,62,88):PANEL,16,focused?WHITE:0xFF3B4056,focused?2:1)));
+                tile.setOnFocusChangeListener((v,focused)->tile.setBackground(gradient(focused
+                        ? new int[]{Color.rgb(15, 155, 220), Color.rgb(149, 62, 201), Color.rgb(236, 76, 133)}
+                        : new int[]{Color.rgb(34, 59, 115), Color.rgb(76, 42, 115), Color.rgb(31, 72, 91)},16)));
                 LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,dp(158),1); tp.leftMargin=dp(4); tp.rightMargin=dp(4); row.addView(tile,tp);
             }
             for(int j=row.getChildCount();j<columns;j++) row.addView(new View(this),new LinearLayout.LayoutParams(0,dp(158),1));
@@ -533,6 +543,12 @@ public class MainActivity extends Activity {
         t.setTypeface(Typeface.DEFAULT, bold ? Typeface.BOLD : Typeface.NORMAL);
         t.setGravity(Gravity.CENTER_VERTICAL);
         return t;
+    }
+
+    private GradientDrawable gradient(int[] colors, int radiusDp) {
+        GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.TL_BR, colors);
+        d.setCornerRadius(dp(radiusDp));
+        return d;
     }
 
     private GradientDrawable round(int color, int radiusDp, int strokeColor, int strokeDp) {
