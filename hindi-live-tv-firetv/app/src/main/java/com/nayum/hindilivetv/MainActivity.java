@@ -190,23 +190,17 @@ public class MainActivity extends Activity {
     }
 
     private void loadPlaylists() {
-        status.setText("Refreshing channel list…");
+        status.setText("Loading India and Hindi channels…");
+        count.setText("LOADING…");
         executor.execute(() -> {
             List<Channel> loaded = new ArrayList<>();
-            String error = null;
-            try {
-                // Global index provides the full public channel catalogue, with India/Hindi slices as backup.
-                loaded.addAll(parsePlaylist(fetch(ALL_CHANNELS_PLAYLIST)));
-                try { loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST))); } catch (Exception ignored) { }
-                try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); } catch (Exception ignored) { }
-                // Keep backup streams available even when playlists load successfully.
-                loaded.addAll(fallbackChannels());
-            } catch (Exception e) {
-                error = e.getMessage() == null ? "Network unavailable" : e.getMessage();
-                try { loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST))); } catch (Exception ignored) { }
-                try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); } catch (Exception ignored) { }
-            }
-            if (loaded.isEmpty()) loaded.addAll(fallbackChannels());
+            boolean playlistLoaded = false;
+            // Avoid the very large global index: it can overwhelm older TV devices.
+            try { loaded.addAll(parsePlaylist(fetch(INDIA_PLAYLIST))); playlistLoaded = true; } catch (Exception ignored) { }
+            try { loaded.addAll(parsePlaylist(fetch(HINDI_PLAYLIST))); playlistLoaded = true; } catch (Exception ignored) { }
+            // Add known public entries as a small backup list.
+            loaded.addAll(fallbackChannels());
+
             Set<String> seen = new HashSet<>();
             List<Channel> unique = new ArrayList<>();
             for (Channel c : loaded) {
@@ -214,23 +208,25 @@ public class MainActivity extends Activity {
                 if (!c.url.isEmpty() && seen.add(key)) unique.add(c);
             }
             unique.sort(Comparator.comparing((Channel c) -> c.category).thenComparing(c -> c.name.toLowerCase(Locale.ROOT)));
+            // Bound UI creation to keep memory and startup time predictable on Fire TV.
+            if (unique.size() > 180) unique = new ArrayList<>(unique.subList(0, 180));
             final List<Channel> result = unique;
-            final String message = error;
+            final boolean loadedFromNetwork = playlistLoaded;
             main.post(() -> {
                 channels.clear();
                 channels.addAll(result);
                 failedStreamUrls.clear();
                 renderChannels();
-                status.setText((message == null ? "Playlist refreshed" : "Offline fallback loaded")
-                        + " · Public streams may be unavailable or region-restricted");
+                status.setText((loadedFromNetwork ? "Channel list ready" : "Showing backup channels; check internet and refresh")
+                        + " · Some public streams may be unavailable or region-restricted");
             });
         });
     }
 
     private String fetch(String address) throws Exception {
         HttpURLConnection connection = (HttpURLConnection) new URL(address).openConnection();
-        connection.setConnectTimeout(12000);
-        connection.setReadTimeout(45000);
+        connection.setConnectTimeout(8000);
+        connection.setReadTimeout(12000);
         connection.setRequestProperty("User-Agent", "HindiLiveTV/1.0 AndroidTV");
         try {
             int code = connection.getResponseCode();
