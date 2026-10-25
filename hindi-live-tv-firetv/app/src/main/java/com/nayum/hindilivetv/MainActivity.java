@@ -358,7 +358,7 @@ public class MainActivity extends Activity {
             for (int j=i;j<Math.min(i+columns,visible.size());j++) {
                 Channel ch=visible.get(j);
                 LinearLayout tile=new LinearLayout(this); tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.CENTER);
-                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(glassPanel(16)); tile.setFocusable(true); tile.setFocusableInTouchMode(false); tile.setClickable(true); tile.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(glassPanel(16)); tile.setFocusable(true); tile.setFocusableInTouchMode(false); tile.setClickable(true); tile.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
                 ImageView logo = new ImageView(this); logo.setScaleType(ImageView.ScaleType.FIT_CENTER); logo.setBackground(round(Color.rgb(34,37,54),12,0,0));
                 TextView fallback=text(iconFor(ch.category),28,WHITE,true); fallback.setGravity(Gravity.CENTER);
                 logo.setBackground(gradient(new int[]{0xAA8BD7E8, 0xAA5D91B2, 0xAA9DC7D5}, 12));
@@ -370,24 +370,6 @@ public class MainActivity extends Activity {
                 LinearLayout footer=new LinearLayout(this); footer.setGravity(Gravity.CENTER_VERTICAL);
                 footer.addView(text(ch.category,10,MUTED,true),new LinearLayout.LayoutParams(-1,dp(20)));
                 tile.addView(footer);
-                Button save=button(favorites.contains(ch.url)?"♥  SAVED":"＋  ADD TO MY LIST",false);
-                save.setTextSize(12); save.setAllCaps(false); save.setMinWidth(dp(120)); save.setMinHeight(dp(44)); save.setFocusable(true); save.setClickable(true); save.setSingleLine(true); save.setEllipsize(android.text.TextUtils.TruncateAt.END);
-                save.setContentDescription(favorites.contains(ch.url) ? "Remove "+ch.name+" from My List" : "Add "+ch.name+" to My List");
-                save.setBackground(round(favorites.contains(ch.url) ? 0xDD8BDCC7 : 0xE6DDEEF4, 12, 0xFFFFFFFF, 1));
-                save.setTextColor(Color.rgb(18, 48, 61));
-                save.setOnFocusChangeListener((v, focused) -> {
-                    save.setBackground(round(favorites.contains(ch.url) ? 0xFF8BDCC7 : (focused ? Color.WHITE : 0xE6DDEEF4), 12, 0xFFFFFFFF, focused ? 3 : 1));
-                    save.setTextColor(Color.rgb(18, 48, 61));
-                });
-                save.setOnClickListener(v->{
-                    boolean adding = !favorites.contains(ch.url);
-                    if(adding) favorites.add(ch.url); else favorites.remove(ch.url);
-                    prefs.edit().putStringSet("favorites",new HashSet<>(favorites)).apply();
-                    Toast.makeText(MainActivity.this, adding ? ch.name+" added to My List" : ch.name+" removed from My List", Toast.LENGTH_SHORT).show();
-                    renderChannels();
-                });
-                LinearLayout.LayoutParams saveP=new LinearLayout.LayoutParams(-1,dp(44)); saveP.topMargin=dp(8);
-                tile.addView(save,saveP);
                 tile.setOnClickListener(v->startChannel(ch));
                 tile.setOnFocusChangeListener((v,focused)->{ tile.setBackground(glassPanelFocused(focused)); name.setTextColor(focused ? Color.WHITE : WHITE); });
                 LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,-2,1); tp.leftMargin=dp(4); tp.rightMargin=dp(4); row.addView(tile,tp);
@@ -464,6 +446,30 @@ public class MainActivity extends Activity {
         }
         FrameLayout.LayoutParams settingsParams = new FrameLayout.LayoutParams(-1, -2, Gravity.TOP | Gravity.RIGHT);
         playerRoot.addView(settingsBar, settingsParams);
+
+        Button favorite = button(favoriteButtonText(channel), false);
+        favorite.setTextSize(16);
+        favorite.setMinHeight(dp(50));
+        favorite.setPadding(dp(18), 0, dp(18), 0);
+        favorite.setBackground(round(0xEE102D55, 14, 0xFF8ED8FF, 2));
+        favorite.setOnFocusChangeListener((v, focused) -> {
+            favorite.setBackground(round(focused ? 0xFF1C5480 : 0xEE102D55, 14,
+                    focused ? Color.WHITE : 0xFF8ED8FF, focused ? 3 : 2));
+            favorite.setTextColor(Color.WHITE);
+        });
+        favorite.setOnClickListener(v -> {
+            boolean adding = !favorites.contains(channel.url);
+            if (adding) favorites.add(channel.url); else favorites.remove(channel.url);
+            prefs.edit().putStringSet("favorites", new HashSet<>(favorites)).apply();
+            favorite.setText(favoriteButtonText(channel));
+            Toast.makeText(MainActivity.this,
+                    adding ? channel.name + " added to My List" : channel.name + " removed from My List",
+                    Toast.LENGTH_SHORT).show();
+        });
+        FrameLayout.LayoutParams favoriteParams = new FrameLayout.LayoutParams(-2, dp(54),
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        favoriteParams.bottomMargin = dp(28);
+        playerRoot.addView(favorite, favoriteParams);
         setContentView(playerRoot);
 
         player.addListener(new Player.Listener() {
@@ -479,6 +485,10 @@ public class MainActivity extends Activity {
         player.play();
         playerView.setFocusable(true);
         playerView.requestFocus();
+    }
+
+    private String favoriteButtonText(Channel channel) {
+        return favorites.contains(channel.url) ? "♥  Remove from My Favorite List" : "＋  Add to My Favorite List";
     }
 
     private void showTrackSettings(int trackType, String title) {
