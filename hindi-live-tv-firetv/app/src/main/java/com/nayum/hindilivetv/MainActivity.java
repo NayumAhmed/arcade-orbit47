@@ -458,7 +458,7 @@ public class MainActivity extends Activity {
     private void showTrackSettings(int trackType, String title) {
         if (trackSelector == null || player == null) return;
         try {
-            new TrackSelectionDialogBuilder(this, title, trackSelector, trackType)
+            new TrackSelectionDialogBuilder(this, title, player, trackType)
                     .setShowDisableOption(trackType == C.TRACK_TYPE_TEXT)
                     .build().show();
         } catch (Exception e) {
