@@ -111,6 +111,27 @@ footer{border-color:#d8f1ff40;background:rgba(9,20,31,.35)}footer strong{color:#
 .orientation-choice span{font-size:15px;letter-spacing:.02em;font-weight:850}.orientation-choice:hover,.orientation-choice:focus-visible{transform:translateY(-2px);background:linear-gradient(135deg,#d9ff83,#9ce95a);color:#102012;border-color:#f1ffd4;outline:3px solid #9ce7ff;outline-offset:3px;box-shadow:0 10px 30px #b7ff5b35,inset 0 1px 0 #ffffffb0}.orientation-card small{color:#d0deeb;font-size:12px}
 @media(max-width:480px){.orientation-card{padding:25px 18px}.orientation-actions{gap:10px}.orientation-choice{min-height:104px;padding:14px 6px;font-size:32px}.orientation-choice span{font-size:14px}.tab{padding:11px 13px}}
 
+
+/* Fire TV / low-power WebView performance profile */
+html{scroll-behavior:auto!important;scroll-padding-top:12px}
+@media (hover:none), (pointer:coarse){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;scroll-snap-type:none!important}
+  header,.tab,.card,.search,.modal,.modalhead,.orientation-chooser,.orientation-card,.orientation-choice{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  header{background:#0b1724f5!important}
+  .tab,.search,.card,.modalhead,.orientation-card,.orientation-choice{box-shadow:none!important}
+  .card{background:#102235!important;border-color:#496277!important}
+  .tab{background:#142638!important}
+  .search{background:#102235!important}
+  .modal{background:#050b12f5!important}
+}
+@media (min-width:900px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .art{height:100px}
+  .cardbody{padding:12px}
+}
+button:focus-visible,input:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:4px solid var(--accent)!important;outline-offset:3px!important}
+.card:focus-within{border-color:var(--accent)!important}
+
 </style>
 </head>
 <body>
@@ -349,7 +370,7 @@ function setAppOrientation(mode){
 function launch(id){
 const g=games.find(x=>x.id===id);if(!g)return;
 setAppOrientation('landscape');
-if(g.url){window.open(g.url,'_blank','noopener,noreferrer');return}
+if(g.url){window.location.href=g.url;return}
 recent=[id,...recent.filter(x=>x!==id)].slice(0,12);save('ao-recent',recent);
 $('#gameTitle').textContent=g.title;$('#modal').classList.add('open');document.body.style.overflow='hidden';
 if(id==='snake')snakeGame();
