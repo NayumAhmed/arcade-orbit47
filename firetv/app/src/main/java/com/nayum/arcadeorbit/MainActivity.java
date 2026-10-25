@@ -21,6 +21,7 @@ public class MainActivity extends Activity {
     private WebView webView;
     private TextView errorView;
     private static final String HOME = "https://nayumahmed.github.io/arcade-orbit47/";
+    private static final String LIVE_TV = "https://nayumahmed.github.io/arcade-orbit47/live-tv.html";
     private long backPressedAt = 0L;
     private static final long EXIT_BACK_WINDOW_MS = 2000L;
 
@@ -56,6 +57,10 @@ public class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String scheme = request.getUrl().getScheme();
+                String host = request.getUrl().getHost();
+                // Keep navigation inside the Arcade Orbit site. Broadcaster stream URLs load as media
+                // inside live-tv.html; ordinary links to other sites are opened in the WebView only
+                // when needed for the live player and browser navigation.
                 return !("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme));
             }
             @Override
