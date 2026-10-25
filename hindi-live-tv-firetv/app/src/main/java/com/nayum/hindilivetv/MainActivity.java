@@ -106,19 +106,32 @@ public class MainActivity extends Activity {
     private void buildHome() {
         root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackground(gradient(new int[]{Color.rgb(12, 24, 60), Color.rgb(38, 24, 74), Color.rgb(14, 62, 85)}, 0));
+        root.setBackground(gradient(new int[]{Color.rgb(10, 29, 48), Color.rgb(18, 48, 67), Color.rgb(18, 61, 72)}, 0));
         root.setPadding(dp(28), dp(18), dp(28), dp(16));
 
         LinearLayout header = new LinearLayout(this);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setOrientation(LinearLayout.HORIZONTAL);
-        TextView logo = text("◢ N ◣  N LIVE TV", 28, WHITE, true);
+        TextView mark = text("N", 27, WHITE, true);
+        mark.setGravity(Gravity.CENTER);
+        mark.setBackground(gradient(new int[]{0xAA68DDFD, 0xAA3677A8}, 14));
+        LinearLayout.LayoutParams markP = new LinearLayout.LayoutParams(dp(48), dp(44));
+        markP.rightMargin = dp(12);
+        header.addView(mark, markP);
+        TextView logo = text("N LIVE TV", 27, WHITE, true);
         header.addView(logo, new LinearLayout.LayoutParams(0, -2, 1));
-        Button refresh = button("↻  Refresh", true);
+        Button refresh = button("↻  Refresh", false);
+        refresh.setTextColor(Color.rgb(15, 39, 54));
+        refresh.setBackground(round(0xE6EAF6FA, 12, 0xFFFFFFFF, 1));
+        refresh.setMinHeight(dp(44));
+        refresh.setOnFocusChangeListener((v, focused) -> {
+            refresh.setBackground(round(focused ? Color.WHITE : 0xE6EAF6FA, 12, 0xFFFFFFFF, focused ? 3 : 1));
+            refresh.setTextColor(Color.rgb(15, 39, 54));
+        });
         refresh.setOnClickListener(v -> loadPlaylists());
         header.addView(refresh);
         header.setPadding(dp(14), dp(10), dp(12), dp(10));
-        header.setBackground(gradient(new int[]{Color.rgb(20, 75, 160), Color.rgb(105, 38, 150), Color.rgb(224, 66, 112)}, 18));
+        header.setBackground(glassPanel(18));
         root.addView(header);
 
         TextView subtitle = text("Developed by Nayum Ahmed  ·  Indian live channels", 15, WHITE, true);
@@ -136,7 +149,8 @@ public class MainActivity extends Activity {
         search.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         search.setPadding(dp(15), dp(9), dp(15), dp(9));
         search.setBackground(round(PANEL, 12, 0xFF40576D, 1));
-        root.addView(search, new LinearLayout.LayoutParams(-1, dp(48)));
+        search.setBackground(glassPanel(14));
+        root.addView(search, new LinearLayout.LayoutParams(-1, dp(50)));
         search.setOnEditorActionListener((v, actionId, event) -> {
             searchQuery = search.getText().toString().trim().toLowerCase(Locale.ROOT);
             renderChannels();
@@ -343,10 +357,10 @@ public class MainActivity extends Activity {
             for (int j=i;j<Math.min(i+columns,visible.size());j++) {
                 Channel ch=visible.get(j);
                 LinearLayout tile=new LinearLayout(this); tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.CENTER);
-                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(gradient(new int[]{Color.rgb(34, 59, 115), Color.rgb(76, 42, 115), Color.rgb(31, 72, 91)}, 16)); tile.setFocusable(true); tile.setClickable(true);
+                tile.setPadding(dp(8),dp(8),dp(8),dp(8)); tile.setBackground(glassPanel(16)); tile.setFocusable(true); tile.setClickable(true); tile.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
                 ImageView logo = new ImageView(this); logo.setScaleType(ImageView.ScaleType.FIT_CENTER); logo.setBackground(round(Color.rgb(34,37,54),12,0,0));
                 TextView fallback=text(iconFor(ch.category),28,WHITE,true); fallback.setGravity(Gravity.CENTER);
-                logo.setBackground(gradient(new int[]{Color.rgb(22, 131, 180), Color.rgb(109, 53, 173), Color.rgb(226, 68, 119)}, 12));
+                logo.setBackground(gradient(new int[]{0xAA8BD7E8, 0xAA5D91B2, 0xAA9DC7D5}, 12));
                 logo.setImageDrawable(round(Color.rgb(34,37,54),12,0,0));
                 if (!ch.logo.isEmpty()) loadChannelLogo(ch.logo,logo);
                 tile.addView(logo,new LinearLayout.LayoutParams(-1,dp(72)));
@@ -355,12 +369,15 @@ public class MainActivity extends Activity {
                 LinearLayout footer=new LinearLayout(this); footer.setGravity(Gravity.CENTER_VERTICAL);
                 footer.addView(text(ch.category,10,MUTED,true),new LinearLayout.LayoutParams(-1,dp(20)));
                 tile.addView(footer);
-                Button save=button(favorites.contains(ch.url)?"♥ Saved":"♡ Add to My List",false);
-                save.setTextSize(12); save.setAllCaps(false); save.setMinWidth(dp(112)); save.setFocusable(true); save.setClickable(true);
+                Button save=button(favorites.contains(ch.url)?"♥  SAVED":"＋  ADD TO MY LIST",false);
+                save.setTextSize(12); save.setAllCaps(false); save.setMinWidth(dp(120)); save.setMinHeight(dp(44)); save.setFocusable(true); save.setClickable(true); save.setSingleLine(true); save.setEllipsize(android.text.TextUtils.TruncateAt.END);
                 save.setContentDescription(favorites.contains(ch.url) ? "Remove "+ch.name+" from My List" : "Add "+ch.name+" to My List");
-                save.setBackground(gradient(favorites.contains(ch.url)
-                        ? new int[]{Color.rgb(18, 150, 120), Color.rgb(35, 175, 145)}
-                        : new int[]{Color.rgb(20, 119, 202), Color.rgb(126, 60, 190)}, 18));
+                save.setBackground(round(favorites.contains(ch.url) ? 0xDD8BDCC7 : 0xE6DDEEF4, 12, 0xFFFFFFFF, 1));
+                save.setTextColor(Color.rgb(18, 48, 61));
+                save.setOnFocusChangeListener((v, focused) -> {
+                    save.setBackground(round(favorites.contains(ch.url) ? 0xFF8BDCC7 : (focused ? Color.WHITE : 0xE6DDEEF4), 12, 0xFFFFFFFF, focused ? 3 : 1));
+                    save.setTextColor(Color.rgb(18, 48, 61));
+                });
                 save.setOnClickListener(v->{
                     boolean adding = !favorites.contains(ch.url);
                     if(adding) favorites.add(ch.url); else favorites.remove(ch.url);
@@ -368,15 +385,13 @@ public class MainActivity extends Activity {
                     Toast.makeText(MainActivity.this, adding ? ch.name+" added to My List" : ch.name+" removed from My List", Toast.LENGTH_SHORT).show();
                     renderChannels();
                 });
-                LinearLayout.LayoutParams saveP=new LinearLayout.LayoutParams(-1,dp(38)); saveP.topMargin=dp(4);
+                LinearLayout.LayoutParams saveP=new LinearLayout.LayoutParams(-1,dp(44)); saveP.topMargin=dp(8);
                 tile.addView(save,saveP);
                 tile.setOnClickListener(v->startChannel(ch));
-                tile.setOnFocusChangeListener((v,focused)->tile.setBackground(gradient(focused
-                        ? new int[]{Color.rgb(15, 155, 220), Color.rgb(149, 62, 201), Color.rgb(236, 76, 133)}
-                        : new int[]{Color.rgb(34, 59, 115), Color.rgb(76, 42, 115), Color.rgb(31, 72, 91)},16)));
-                LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,dp(158),1); tp.leftMargin=dp(4); tp.rightMargin=dp(4); row.addView(tile,tp);
+                tile.setOnFocusChangeListener((v,focused)->tile.setBackground(glassPanelFocused(focused)));
+                LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,-2,1); tp.leftMargin=dp(4); tp.rightMargin=dp(4); row.addView(tile,tp);
             }
-            for(int j=row.getChildCount();j<columns;j++) row.addView(new View(this),new LinearLayout.LayoutParams(0,dp(158),1));
+            for(int j=row.getChildCount();j<columns;j++) row.addView(new View(this),new LinearLayout.LayoutParams(0,dp(210),1));
         }
     }
 
@@ -548,6 +563,23 @@ public class MainActivity extends Activity {
     private GradientDrawable gradient(int[] colors, int radiusDp) {
         GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.TL_BR, colors);
         d.setCornerRadius(dp(radiusDp));
+        return d;
+    }
+
+    private GradientDrawable glassPanel(int radiusDp) {
+        GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{0xC93D6478, 0xB52D5268, 0xC93D6977});
+        d.setCornerRadius(dp(radiusDp));
+        d.setStroke(dp(1), 0xA8D9F2FA);
+        return d;
+    }
+
+    private GradientDrawable glassPanelFocused(boolean focused) {
+        GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                focused ? new int[]{0xF05D9BB0, 0xF05B8FA7, 0xF077A9B4}
+                        : new int[]{0xC93D6478, 0xB52D5268, 0xC93D6977});
+        d.setCornerRadius(dp(16));
+        d.setStroke(dp(focused ? 3 : 1), focused ? Color.WHITE : 0xA8D9F2FA);
         return d;
     }
 
