@@ -47,7 +47,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
-    private static final String INDIA_PLAYLIST = "https://iptv-org.github.io/iptv/streams/in.m3u";
+    private static final String INDIA_PLAYLIST = "https://iptv-org.github.io/iptv/countries/in.m3u";
     private static final String HINDI_PLAYLIST = "https://iptv-org.github.io/iptv/languages/hin.m3u";
     private static final int BG = Color.rgb(7, 17, 31);
     private static final int PANEL = Color.rgb(17, 39, 61);
@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
         categoryScroll.addView(categoryRow);
         root.addView(categoryScroll);
         categories.clear();
-        Collections.addAll(categories, "All Channels", "Hindi News", "Entertainment", "Hindi Music", "Devotional", "Bhojpuri", "Other");
+        Collections.addAll(categories, "All Channels", "Hindi News", "Entertainment", "Documentary", "Sports", "Kids", "Hindi Music", "Devotional", "Bhojpuri", "Other");
         for (String category : categories) {
             Button b = button(category, category.equals(selectedCategory));
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-2, dp(40));
@@ -258,7 +258,8 @@ public class MainActivity extends Activity {
 
     private boolean isRelevant(String name) {
         String n = name.toLowerCase(Locale.ROOT);
-        return n.matches(".*(hindi|aaj tak|abp news|ndtv india|india tv|news18 india|tv9 bharatvarsh|zee news|republic bharat|news nation|good news today|dd national|manoranjan|anjan tv|b4u|9xm|9x jalwa|9x tashan|aastha|sanskar|satsang|bhojpuri|hindi khabar|bharat express|bhajan).*");
+        // Keep a wider selection of Indian channels, including entertainment and documentary channels.
+        return n.matches(".*(india|indian|hindi|aaj tak|abp|ndtv|news18|tv9|zee news|republic|news nation|good news today|dd national|dd india|dd bharati|manoranjan|anjan tv|b4u|9xm|9x jalwa|9x tashan|aastha|sanskar|satsang|bhojpuri|bharat express|bhajan|sony sab|sony entertainment|sony yay|history tv18|history tv|colors|star plus|star bharat|zee tv|&tv|zee anmol|sun tv|vijay tv|gemini tv|maha movie|colors cineplex|discovery|animal planet|nat geo|national geographic|travelxp|foodxp|sports|cricket|cartoon|kids|music|public tv|raj news|pitaara|news).*");
     }
 
     private String categoryFor(String name) {
@@ -266,8 +267,11 @@ public class MainActivity extends Activity {
         if (n.matches(".*(aastha|sanskar|satsang|bhajan|adhyatm).*")) return "Devotional";
         if (n.contains("bhojpuri")) return "Bhojpuri";
         if (n.matches(".*(9x|music|jalwa|tashan).*")) return "Hindi Music";
+        if (n.matches(".*(history|discovery|animal planet|nat geo|national geographic|documentary|travelxp|foodxp).*")) return "Documentary";
+        if (n.matches(".*(cartoon|kids|sony yay|nick|hungama).*")) return "Kids";
+        if (n.matches(".*(sports|cricket|ten sports|star sports).*")) return "Sports";
         if (n.matches(".*(news|aaj tak|abp|ndtv|bharatvarsh|india tv|republic).*")) return "Hindi News";
-        if (n.matches(".*(dd national|manoranjan|anjan|b4u movie|&tv).*")) return "Entertainment";
+        if (n.matches(".*(sony sab|sony entertainment|colors|star plus|star bharat|zee tv|&tv|zee anmol|dd national|dd india|dd bharati|manoranjan|anjan|b4u movie|sun tv|vijay tv|gemini tv).*")) return "Entertainment";
         return "Other";
     }
 
@@ -358,34 +362,21 @@ public class MainActivity extends Activity {
 
     private void showPlayer(Channel channel) {
         playerVisible = true;
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         if (player != null) { player.release(); player = null; }
-        playerScreen = new LinearLayout(this);
-        playerScreen.setOrientation(LinearLayout.VERTICAL);
-        playerScreen.setBackgroundColor(Color.BLACK);
-        LinearLayout controls = new LinearLayout(this);
-        controls.setOrientation(LinearLayout.HORIZONTAL);
-        controls.setGravity(Gravity.CENTER_VERTICAL);
-        controls.setPadding(dp(16), dp(8), dp(16), dp(8));
-        controls.setBackgroundColor(0xFF102235);
-        TextView title = text(channel.name, 19, WHITE, true);
-        controls.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
-        prevButton = button("◀ Previous", false);
-        nextButton = button("Next ▶", false);
-        Button close = button("✕  Close / Back", false);
-        controls.addView(prevButton);
-        controls.addView(nextButton);
-        controls.addView(close);
-        playerScreen.addView(controls, new LinearLayout.LayoutParams(-1, dp(60)));
+
+        // True edge-to-edge playback: the video occupies the entire TV display.
         playerView = new PlayerView(this);
         playerView.setUseController(true);
-        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        playerView.setControllerAutoShow(true);
+        playerView.setControllerHideOnTouch(true);
+        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
         playerView.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
         playerView.setBackgroundColor(Color.BLACK);
-        playerScreen.addView(playerView, new LinearLayout.LayoutParams(-1, 0, 1));
-        TextView help = text("Community playlist · some broadcasters may block external playback", 12, MUTED, false);
-        help.setPadding(dp(16), dp(6), dp(16), dp(6));
-        playerScreen.addView(help);
-        setContentView(playerScreen);
+        playerView.setKeepContentOnPlayerReset(true);
+        setContentView(playerView);
 
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
@@ -410,16 +401,13 @@ public class MainActivity extends Activity {
                         }
                     }, 900);
                 } else {
-                    Toast.makeText(MainActivity.this, "No more untried streams in this category. Press Back and choose another channel or refresh.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "No more untried streams. Press Back to choose another channel or refresh.", Toast.LENGTH_LONG).show();
                 }
             }
         });
         player.setMediaItem(MediaItem.fromUri(channel.url));
         player.prepare();
         player.play();
-        prevButton.setOnClickListener(v -> playRelative(-1));
-        nextButton.setOnClickListener(v -> playRelative(1));
-        close.setOnClickListener(v -> closePlayer());
         playerView.setFocusable(true);
         playerView.requestFocus();
     }
