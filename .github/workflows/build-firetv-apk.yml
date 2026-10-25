@@ -6,6 +6,7 @@ on:
     paths:
       - "firetv/**"
       - "index.html"
+      - "live-tv.html"
       - ".github/workflows/build-firetv-apk.yml"
   workflow_dispatch:
 
